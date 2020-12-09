@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily timer
+# This is required: https://serverfault.com/a/775363
+Requires=daily.service
+
+[Timer]
+# OnUnitActiveSec=10
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

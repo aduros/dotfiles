@@ -1,0 +1,13 @@
+#!/bin/sh -e
+#
+# Scans a codebase for TODO comments and displays them sorted by date.
+#
+# Pretty handy for those of us who spam TODOs all over the place but easily lose track of them.
+# Comments should be in the following format:
+#   // TODO(2020-12-15): Fix rendering bug
+#
+# The output of this program is meant to be fed into vim's quickfix list. Vim abbreviations can make
+# the date insertion automatic.
+
+rg --vimgrep --only-matching '\b(TODO|FIXME)\s*\(([\d-]*?)\)[:;.,]? *(.*)' --replace ' $2 | $3' -- "$@" | \
+    sort --field-separator ":" --key 4 --reverse

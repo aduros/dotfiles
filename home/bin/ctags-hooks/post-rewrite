@@ -1,0 +1,4 @@
+#!/bin/sh
+case "$1" in
+	rebase) ctags-update > /dev/null 2>&1 &
+esac

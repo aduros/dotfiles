@@ -1,0 +1,9 @@
+#!/bin/sh -e
+#
+# Sometimes the touchpad on Dell XPS 13 dies and needs to be restarted
+
+id=`xinput list --id-only "DLL075B:01 06CB:76AF Touchpad"`
+
+xinput disable "$id"
+xinput enable "$id"
+xinput set-prop "$id" "libinput Tapping Enabled" 1

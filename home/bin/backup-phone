@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+mnt=`mktemp -d`
+go-mtpfs "$mnt" &
+
+# Hackily wait for the mount to finish
+sleep 2
+
+cd "$mnt/Internal shared storage"
+
+# Copy from phone
+rsync -av --ignore-existing DCIM/Camera/ ~/data/media/camera/
+rsync -av --ignore-existing "WhatsApp/Media/WhatsApp Images"/ ~/data/media/whatsapp/
+rsync -av --ignore-existing "WhatsApp/Media/WhatsApp Video"/ ~/data/media/whatsapp/
+
+# Copy to phone
+find ~/data/books -name '*.epub' -print0 | xargs -0 cp -vn -t Books --
+
+cd /
+fusermount -u "$mnt"
+rmdir "$mnt"

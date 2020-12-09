@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Packages a git project and shares it
+#
+# Usage: git-share [find args...]
+
+umask 077
+
+ARCHIVE="/tmp/git-share-$RANDOM.zip"
+git ls-files --exclude-standard | zip "$ARCHIVE" -r -@
+
+if [ $# -ge 1 ]; then
+    find "$@" | zip "$ARCHIVE" -r -@
+fi
+
+share "$ARCHIVE"
+rm "$ARCHIVE"

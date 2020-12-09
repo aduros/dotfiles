@@ -1,0 +1,7 @@
+#!/bin/sh
+
+LOCAL_PORT="${1-80}"
+REMOTE_PORT="${2-9001}"
+
+echo "Tunneling aduros.com:$REMOTE_PORT to 127.0.0.1:$LOCAL_PORT"
+ssh -NR "$REMOTE_PORT:127.0.0.1:$LOCAL_PORT" catdap

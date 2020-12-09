@@ -1,0 +1,100 @@
+! Override the *customization: -color line from /etc/X11/Xresources/x11-common
+! Remove on regolith?
+*customization:
+
+! XTerm.xft: true
+! XTerm.xfntAntialias: true
+
+! Styling
+XTerm.vt100.faceName: DejaVu Sans Mono
+XTerm.vt100.boldMode: false
+XTerm.vt100.faceSize: 11
+XTerm.vt100.internalBorder: 16
+XTerm.borderWidth: 0
+
+! Sensible defaults
+XTerm.termName: xterm-256color
+XTerm.vt100.locale: false
+XTerm.vt100.utf8: true
+XTerm.vt100.scrollTtyOutput: false
+XTerm.vt100.scrollKey: true
+XTerm.vt100.bellIsUrgent: true
+XTerm.vt100.metaSendsEscape: true
+
+! Send ^? instead of ^H on backspace. I bind ^H in zsh
+XTerm.backarrowKeyIsErase: true
+
+! Key mappings. Remap Shift-space to F13 so that vim can use it
+XTerm.vt100.translations: #override \n\
+    Ctrl Shift <Key>N: scroll-back(1, halfpage) \n\
+    Ctrl Shift <Key>T: scroll-forw(1, halfpage) \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n\
+    Shift <Key>space: string("\033[25~") \n\
+    Ctrl Shift <Key>O: string("\033[26~")
+
+URxvt.termName: rxvt-unicode
+URxvt.font: xft:DejaVu Sans Mono:size=11
+URxvt.urgentOnBell: true
+URxvt.scrollBar: false
+URxvt.internalBorder: 16
+URxvt.letterSpace: -1
+
+! do not scroll with output
+URxvt*scrollTtyOutput: false
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+! Disallow weird insert modes
+! https://unix.stackexchange.com/questions/444773/how-to-disable-the-ctrlshift-binding-iso-14755-in-urxvt
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+
+! Map certain key chords to F13+ so they can be picked up by vim and other applications
+! https://jscape.kayako.com/knowledgebase/article/View/5/7/sending-ctrla-ctrlh-f1-f12-and-other-function-keys-to-telnet-server
+! http://ascii-table.com/ansi-escape-sequences.php
+URxvt.keysym.Shift-space: \033[25~
+
+! Map keys for scrolling (10 lines at a time)
+! https://ubuntuforums.org/archive/index.php/t-783096.html
+URxvt.keysym.Shift-Control-N: command:\033]720;10\007
+URxvt.keysym.Shift-Control-T: command:\033]721;10\007
+
+! Nord color scheme
+#define nord0 #2E3440
+#define nord1 #3B4252
+#define nord2 #434C5E
+#define nord3 #4C566A
+#define nord4 #D8DEE9
+#define nord5 #E5E9F0
+#define nord6 #ECEFF4
+#define nord7 #8FBCBB
+#define nord8 #88C0D0
+#define nord9 #81A1C1
+#define nord10 #5E81AC
+#define nord11 #BF616A
+#define nord12 #D08770
+#define nord13 #EBCB8B
+#define nord14 #A3BE8C
+#define nord15 #B48EAD
+*.foreground:   nord4
+*.background:   nord0
+*.cursorColor:  nord4
+*.color0: nord1
+*.color1: nord11
+*.color2: nord14
+*.color3: nord13
+*.color4: nord9
+*.color5: nord15
+*.color6: nord8
+*.color7: nord5
+*.color8: nord3
+*.color9: nord11
+*.color10: nord14
+*.color11: nord13
+*.color12: nord9
+*.color13: nord15
+*.color14: nord7
+*.color15: nord6

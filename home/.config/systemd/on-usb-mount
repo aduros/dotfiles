@@ -1,0 +1,31 @@
+#!/bin/sh -e
+#
+# Runs when the backup USB is mounted
+
+# Make notify-send work
+dbus-update-activation-environment --systemd --all
+
+# notify-send "Backing up to USB..." -i gnome-dev-removable-usb
+zenity --question --text "Backup to the connected USB?" || exit 0
+
+usb="/media/$USER/bruno-backup"
+
+# Sync the data directory
+if [ -d ~/data ]; then
+    rsync -a --delete ~/data/ "$usb/data/"
+    sync
+fi
+
+# Add files to freezer
+if [ -d ~/freezer ] && [ -z `find ~/freezer -maxdepth 0 -empty` ]; then
+    mkdir "$usb/freezer" || true
+    stamp=`date +%Y-%m-%d`
+    rsync -a ~/freezer/ "$usb/freezer/$stamp/"
+    sync
+
+    # Clean out the local copy
+    rm -rf ~/freezer
+    mkdir -p ~/freezer
+fi
+
+notify-send "Backup to USB complete" -i gnome-dev-removable-usb

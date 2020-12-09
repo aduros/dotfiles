@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+import os
+import re
+import sys
+
+# apt-get install python-wand
+from wand.image import Image
+
+textures = []
+fileSize = 0
+memorySize = 0
+
+class Texture:
+    def __init__ (self, name, width, height):
+        self.name = name
+        self.width = width
+        self.height = height
+        self.fileSize = 0
+
+    def memoryUsage (self):
+        return 4*self.width*self.height
+
+args = sys.argv[1:] if len(sys.argv) > 1 else ["."]
+for arg in args:
+    for root, dirs, files in os.walk(arg, followlinks=True):
+        files = [file for file in files if file[0] != "." and file.endswith(".png")]
+        for file in files:
+            path = os.path.join(root, file)
+            fileSize = os.stat(path).st_size
+            with Image(filename=path) as img:
+                texture = Texture(path, img.width, img.height)
+                texture.fileSize = fileSize
+                textures.append(texture)
+
+textures.sort(cmp = lambda a, b: int(b.memoryUsage() - a.memoryUsage()))
+
+totalMemory = 0
+totalFileSize = 0
+for texture in textures:
+    totalMemory += texture.memoryUsage()
+    totalFileSize += texture.fileSize
+
+    print("%s MB: %s" % (texture.memoryUsage()/(1024*1024), texture.name))
+
+print("Files: %s" % len(textures))
+print("File size: %s MB" % (totalFileSize/(1024*1024)))
+print("Memory: %s MB" % (totalMemory/(1024*1024)))

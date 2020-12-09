@@ -1,0 +1,19 @@
+--langdef=actionscript
+--langmap=actionscript:.as
+--regex-actionscript=/^[ \t]*package[ \t]+([A-Za-z0-9_.]+)[ \t]*/\1/a,package,packages/
+--regex-actionscript=/^[ \t]*[(private|public|protected|static) ( \t)]+function[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1/f, function, functions/
+--regex-actionscript=/^[ \t]*[(public) ( \t)]*function[ \t]+(set|get) [ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1 \2/p,property, properties/
+--regex-actionscript=/^[ \t]*(private|public|protected|static)[ ( \t)]+var[ \t]+([A-Za-z0-9_]+)[ \t]*/\2/v,variable, variables/
+--regex-actionscript=/^[ \t]*[(private|public|protected) ( \t)(static)]+const[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/t,constant, constants/
+--regex-actionscript=/\bclass\s+([A-Za-z0-9_]+)/\1/c,classes/
+--regex-actionscript=/\binterface\s+([A-Za-z0-9_]+)/\1/i,interfaces/
+
+--langdef=haxe
+--langmap=haxe:.hx
+--regex-haxe=/^[ \t]*[(private|public|static|override|inline|dynamic)( \t)]*function[ \t]+([A-Za-z0-9_]+)[ \t]*\(([^\{]*)/\1/f,functions/
+--regex-haxe=/^[ \t]*([private|public|static|protected|inline][ \t]?)+var[ \t]+([A-Za-z0-9_]+)/\2/v,variables/ 
+--regex-haxe=/\bclass\s+([A-Za-z0-9_]+)/\1/c,classes/
+--regex-haxe=/\binterface\s+([A-Za-z0-9_]+)/\1/i,interfaces/
+--regex-haxe=/\benum\s+([A-Za-z0-9_]+)/\1/e,enums/
+--regex-haxe=/\btypedef\s+([A-Za-z0-9_]+)\s*=/\1/t,typedefs/
+--regex-haxe=/\babstract\s+([A-Za-z0-9_]+)/\1/a,abstracts/

@@ -1,0 +1,5 @@
+#!/bin/sh -e
+#
+# Trim trailing whitespace from files
+
+replace '[[:space:]]\+$' '' "$@"

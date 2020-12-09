@@ -1,0 +1,16 @@
+#!/bin/sh -e
+#
+# Just a wrapper for i3lock
+
+i3lock --ignore-empty-password --show-failed-attempts -i ~/.config/bruno-lock.png
+
+if [ "$1" = "suspend" ]; then
+    # Wait for the lock screen to show, otherwise the workspace will be visible for a split second
+    # when coming out of suspend
+    sleep 1
+
+    systemctl suspend
+
+    # XPS 13 touchpad breaks after coming out of sleep so restart it
+    unfuck-touchpad
+fi

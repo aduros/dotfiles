@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+# https://tbaggery.com/2011/08/08/effortless-ctags-with-git.html
+
+if [ -d .git ]; then
+    ctags-update
+    mkdir -p .git/hooks
+    cp `dirname "$0"`/ctags-hooks/* .git/hooks
+    echo "ctags for $PWD will be updated with every new commit. To undo remove .git/hooks."
+else
+    echo "Not a git repo!"
+    exit 1
+fi

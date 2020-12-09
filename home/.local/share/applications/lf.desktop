@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Lf File Manager
+Exec=lf %F
+Icon=system-file-manager
+Terminal=true
+StartupNotify=true
+Type=Application
+Categories=System;Utility;Core;FileTools;FileManager;

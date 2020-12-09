@@ -1,0 +1,14 @@
+#!/bin/sh -e
+#
+# Toggle given files in all instances of lf.
+
+cmd="toggle"
+
+for file in "$@"; do
+    # Convert to absolute path, ignore symlinks
+    file=`realpath --strip "$file"`
+
+    cmd="$cmd \"$file\""
+done
+
+lf -remote "send $cmd"

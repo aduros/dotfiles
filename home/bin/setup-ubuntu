@@ -1,0 +1,68 @@
+#!/bin/bash -e
+#
+# Sets up a minimal Ubuntu system (either desktop or server). Probably works on Debian too.
+
+packages="
+    archivemount
+    curl
+    entr
+    exiftools
+    fd-find
+    highlight
+    htop
+    jsonlint
+    moreutils
+    neovim
+    ripgrep
+    tree
+    zsh
+    zsh-syntax-highlighting
+"
+
+# If not running on a server
+if [ "$SSH_TTY" == "" ]; then
+    # Update permissions so ssh works
+    chmod 600 ~/.ssh/id_rsa
+
+    # Apply dconf settings
+    dconf load / < ~/.config/dconf-settings.ini
+
+    # Make some standard directories
+    mkdir -p ~/apps ~/freezer ~/trash
+
+    packages+="
+        apg
+        build-essential
+        duc
+        exuberant-ctags
+        fonts-emojione
+        gcalcli
+        geary
+        gimp
+        git
+        grabc
+        hsetroot
+        imagemagick
+        libnotify-bin
+        mpv
+        nodejs
+        npm
+        p7zip-full
+        rar
+        rofi
+        scrot
+        xcwd
+        xdotool
+        xsel
+        zathura
+    "
+fi
+
+sudo apt install $packages
+
+if [ "$SSH_TTY" == "" ]; then
+    npm install -g typescript typescript-language-server
+    # TODO: pip3 install rofimoji
+fi
+
+chsh -s /bin/zsh

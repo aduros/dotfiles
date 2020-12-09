@@ -1,0 +1,19 @@
+#!/bin/sh -e
+#
+# View a markdown file, with live-reload.
+
+if [ "$1" = "" ]; then
+    echo "Usage: $0 <file>"
+    exit 1
+fi
+
+markdown="$1"
+pdf=`mktemp --suffix=.pdf`
+
+pandoc "$markdown" -o "$pdf"
+echo "$markdown" | entr -p pandoc "$markdown" -o "$pdf" &
+
+zathura "$pdf"
+
+rm "$pdf"
+pkill -P $$

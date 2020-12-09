@@ -1,0 +1,5 @@
+[Desktop Entry]
+Hidden=true
+Name=Import ICS to calendar
+Exec=calendar-import %F
+Type=Application

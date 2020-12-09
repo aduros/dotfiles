@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+file="$1"
+encoding=`file --mime-encoding -bL -- "$file"`
+
+if [ "$encoding" = "binary" ]; then
+    mime=`file --mime-type -bL -- "$file"`
+    printf '\033[7m'
+    echo -n "$mime"
+    printf '\033[0m\n'
+
+    case "$mime" in
+    application/x-tar | application/gzip | application/x-bzip2 | application/x-xz)
+        tar -tf -- "$file" ;;
+    application/zip | application/java-archive)
+        zip -sf "$file" ;;
+    application/x-rar)
+        rar l -- "$file" ;;
+    application/x-7z-compressed)
+        7z l -- "$file" ;;
+    *)
+        exiftool -veryShort -Title -Creator -Artist -Album -Duration -ImageSize -PageCount -- "$file" ;;
+    esac
+
+else
+    # cat -- "$1"
+    highlight --force --out-format ansi -- "$file"
+fi

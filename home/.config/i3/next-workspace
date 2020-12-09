@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+#
+# Based on https://raw.githubusercontent.com/regolith-linux/regolith-i3xrocks-config/master/scripts/next-workspace
+
+import i3ipc
+import argparse
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+            description = "Find the next non-opened workspace and go there.")
+    parser.add_argument('-s','--startnum',type=int,default = 1,
+        help="Set smallest workspace number, usually change to 0 if anything.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-mv","--move-window",action="store_true",
+            help="Instead of going to next non-opened workspace, move current window there.")
+    group.add_argument("-mvf","--move-window-and-follow",action="store_true",
+            help="Move current window to next non-opened workspace and follow.")
+    args = parser.parse_args()
+
+    startnum = args.startnum
+    i3 = i3ipc.Connection()
+    workspaces = i3.get_workspaces()
+    nums = {w.num for w in workspaces}
+    # font = workspaces[0].name.split("'")[1]
+    s_ = {x for x in range(args.startnum,args.startnum + 20)}
+    targetnum = min(s_ - nums)
+    # targetstring = "{0}:<span font_desc='{1}'> {0} </span>".format(targetnum,font)
+    targetstring = str(targetnum)
+
+    if args.move_window or args.move_window_and_follow:
+        i3.command("move container workspace " + targetstring)
+    if not args.move_window:
+        i3.command("workspace number " + targetstring)
+

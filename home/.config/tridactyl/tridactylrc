@@ -1,0 +1,52 @@
+set theme shydactyl
+colors base16-nord
+
+" Override to not add the window class which messes with xterm xresources
+set editorcmd x-terminal-emulator -e "$EDITOR %f '+normal!%lGzv%c|'"
+
+set newtab about:blank
+
+" Be dvorak friendly
+bind h back
+bind s forward
+bind t scrollline 10
+bind n scrollline -10
+bind T scrollline 50
+bind N scrollline -50
+bind . tabprev
+bind p tabnext
+bind > tabmove -1
+bind P tabmove +1
+set hintchars aoeuidhtnsqjkxbmwvzpyfgcrl
+
+" Opening tabs
+bind o fillcmdline open
+bind <C-o> current_url open
+bind O fillcmdline tabopen
+bind <C-O> current_url open
+
+" Find in page
+bind / fillcmdline find
+bind ? fillcmdline find -?
+bind l findnext 1
+bind L findnext -1
+" bind ,<Space> nohlsearch
+
+bind gp clipboard open
+bind gw tabdetach
+
+" Allow Ctrl-a to select all in the commandline
+unbind --mode=ex <C-a>
+unbind --mode=ex <C-c>
+
+" Subscribe to an RSS feed
+command subscribe js location.href="https://aduros.com/miniflux/bookmarklet?uri="+encodeURIComponent(location.href)
+bind ,s subscribe
+
+" View old versions of the page on web.archive.org
+command archive js location.href="https://web.archive.org/*/"+location.href
+bind ,a archive
+
+" Open the current URL in Chrome
+command chrome composite js location.href | shellescape | exclaim google-chrome
+bind ,c chrome

@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+# This is run for each file currently toggled in sxiv
+while read file; do
+    case "$1" in
+        # Copy path to clipboard
+        y) realpath "$file" | xsel -i --clipboard ;;
+
+        # Open in Gimp
+        g) setsid -f gimp "$file" ;;
+    esac
+done

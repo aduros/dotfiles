@@ -1,0 +1,13 @@
+# original: https://askubuntu.com/questions/25071/how-to-run-a-script-when-a-specific-flash-drive-is-mounted
+# you can find your device unit with: sudo systemctl list-units -t mount
+
+[Unit]
+Description=Runs a script when a certain USB drive is mounted
+Requires=media-bruno-bruno\x2dbackup.mount
+After=media-bruno-bruno\x2dbackup.mount
+
+[Service]
+ExecStart=/home/bruno/.config/systemd/on-usb-mount
+
+[Install]
+WantedBy=media-bruno-bruno\x2dbackup.mount

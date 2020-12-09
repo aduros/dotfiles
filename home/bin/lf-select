@@ -1,0 +1,8 @@
+#!/bin/sh -e
+#
+# Select a given file in all instances of lf.
+
+# Convert to absolute path, ignore symlinks
+file=`realpath --strip "$1"`
+
+lf -remote "send select \"$file\""

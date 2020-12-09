@@ -1,0 +1,15 @@
+# Don't forget to run lesskey to update .less! (Vim autocmd should do this automatically)
+
+#command
+t forw-line
+n back-line
+T forw-scroll
+N back-scroll
+l repeat-search
+L reverse-search
+\e quit
+
+#env
+LESS = -iR
+# Workaround for mapping ESC: https://github.com/gwsw/less/issues/83
+LESS_TERMCAP_@8 =

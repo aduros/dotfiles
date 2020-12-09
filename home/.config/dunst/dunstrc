@@ -1,0 +1,62 @@
+; Show notifications on the polybar, just to the left of the indicator icons on the top right
+
+[urgency_low]
+foreground = "#eceff4"
+background = "#1c2027"
+
+[urgency_normal]
+foreground = "#eceff4"
+background = "#1c2027"
+; background = "#ff0000"
+
+[urgency_critical]
+foreground = "#bf616a"
+background = "#1c2027"
+
+[global]
+font = Ubuntu 11
+geometry = 800x4-150+4
+; transparency = 10
+padding = 5
+horizontal_padding = 8
+; alignment = right
+separator_color = "#2e3440"
+separator_height = 1
+corner_radius = 4
+markup = full
+shrink = true
+ignore_newline = true
+; word_wrap = true
+
+; Icons
+icon_position = left
+max_icon_size = 18
+icon_path = "/usr/share/icons/gnome/16x16/status:/usr/share/icons/gnome/16x16/devices:/usr/share/icons/gnome/16x16/apps:/usr/share/icons/gnome/16x16/mimetypes"
+
+; Actions
+show_indicators = false
+mouse_left_click = do_action
+mouse_right_click = close_all
+dmenu = rofi -dmenu -p Notification
+browser = x-www-browser
+
+; format = "%s  —  %b"
+; format = "%s  /  %b"
+format = "%s  -  %b"
+
+[shortcuts]
+history = "shift+mod1+Delete"
+close_all = "mod1+Delete"
+
+; Don't show the separator between the summary and body if there is no body
+[bruno_format_bodyless]
+body = ""
+format = "%s"
+
+; Delay notifications when in fullscreen to show when coming out of fullscreen
+[bruno_delay_fullscreen]
+fullscreen = pushback
+
+[bruno_skip_geary]
+desktop_entry = "org.gnome.Geary"
+skip_display = true

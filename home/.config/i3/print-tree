@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+#
+# Just prints a workspace tree for debugging purposes
+
+from i3ipc import Connection, Event
+
+def print_tree (node, indent=""):
+    print(indent, node.id, node.layout)
+    for node in node.nodes:
+        print_tree(node, indent+"  ")
+
+def get_workspace (i3):
+    workspaces = i3.get_workspaces()
+    for workspace in workspaces:
+        if workspace.focused:
+            return i3.get_tree().find_by_id(workspace.ipc_data["id"]).workspace()
+
+i3 = Connection()
+
+for workspace in i3.get_workspaces():
+    # if workspace.name == "4":
+    if workspace.focused:
+        print_tree(i3.get_tree().find_by_id(workspace.ipc_data["id"]).workspace())

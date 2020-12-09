@@ -1,0 +1,6 @@
+[Unit]
+Description=Run daily script
+
+[Service]
+Type=oneshot
+ExecStart=/home/bruno/.config/systemd/daily

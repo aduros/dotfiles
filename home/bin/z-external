@@ -1,0 +1,7 @@
+#!/bin/bash -e
+#
+# Like "z" but can be run from outside a shell
+
+_Z_DATA="$HOME/.cache/z_data"
+. ~/.config/shell/z.sh
+_z "$@"

@@ -1,0 +1,163 @@
+[colors]
+foreground = #eceff4
+alert = #bd2c40
+muted = #4c566a
+
+[bar/main]
+width = 100%
+height = 27
+fixed-center = true
+
+background = #00000000
+foreground = ${colors.foreground}
+; foreground = #f00
+
+line-size = 0
+; line-color = #f00
+
+border-size = 4
+border-color = #00000000
+
+padding-left = 8
+padding-right = 10
+; padding-left = 2
+; padding-right = 4
+
+module-margin-left = 1
+module-margin-right = 2
+
+# TODO: Tune font. The last param is important as a vertical offset
+font-0 = Ubuntu:size=11;3
+; font-0 = Roboto:style=Bold:size=10.5;3
+; font-0 = Roboto:style=Bold:size=11;4
+; font-0 = DejaVu Sans Mono:size=11;3
+; font-0 = DejaVu Sans:size=11;3
+; font-0 = Droid Sans:size=11;3
+; font-0 = Droid Sans:style=Bold:size=12;3
+font-1 = Font Awesome 5 Free:style=Solid:size=10;2
+font-2 = Iosevka Nerd Font:style=Medium:size=16;4
+
+modules-left = i3
+modules-center = date
+modules-right = pulseaudio wifi battery
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+; tray-position = right
+; tray-offset-x = -15
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+
+label-mode = %{F#ebcb8b}%{T3}%{T-}%{F-}%{F#2e3440 B#ebcb8b}%mode%%{F- B-}%{F#ebcb8b}%{T3}%{T-}%{F-}
+
+; focused = Active workspace on focused monitor
+label-focused = %{F#4c566a}%{T3}%{T-}%{F-}%{B#4c566a}%index%%{B-}%{F#4c566a}%{T3}%{T-}%{F-}
+
+; unfocused = Inactive workspace on any monitor
+label-unfocused = %{F#00000000}%{T3}%{T-}%{F-}%{F#d8dee9}%index%%{F#00000000}%{T3}%{T-}%{F-}
+
+; visible = Active workspace on unfocused monitor
+label-visible = %{F#2e3440}%{T3}%{T-}%{F-}%{B#2e3440}%index%%{B-}%{F#2e3440}%{T3}%{T-}%{F-}
+
+; urgent = Workspace with urgency hint set
+label-urgent = %{F#bf616a}%{T3}%{T-}%{F-}%{B#bf616a}%index%%{B-}%{F#bf616a}%{T3}%{T-}%{F-}
+
+; ; focused = Active workspace on focused monitor
+; label-focused = %icon%
+; label-focused-padding = 2
+; ; unfocused = Inactive workspace on any monitor
+; label-unfocused = %{T1}%index%%{T-}
+; label-unfocused-padding = 2
+; ; visible = Active workspace on unfocused monitor
+; label-visible = %{F#2e3440}%{T3}%{T-}%{F-}%{B#2e3440}%index%%{B-}%{F#2e3440}%{T3}%{T-}%{F-}
+; ; urgent = Workspace with urgency hint set
+; label-urgent = %{F#bf616a}%{T3}%{T-}%{F-}%{B#bf616a}%index%%{B-}%{F#bf616a}%{T3}%{T-}%{F-}
+; ; icons
+; ws-icon-0 = 1;❶
+; ws-icon-1 = 2;❷
+; ws-icon-2 = 3;❸
+; ws-icon-3 = 4;❹
+; ws-icon-4 = 5;❺
+; ws-icon-5 = 6;❻
+; ws-icon-6 = 7;❼
+; ws-icon-7 = 8;❽
+; ws-icon-8 = 9;❾
+; ws-icon-9 = 10;❿
+
+[module/wifi]
+type = internal/network
+interface = wlp58s0
+interval = 3.0
+
+format-connected = %{A1:xdotool search --onlyvisible --class gnome-control-center windowclose || gnome-control-center wifi &:}<ramp-signal>%{A}
+; label-connected = %essid%
+
+format-disconnected = %{A1:xdotool search --onlyvisible --class gnome-control-center windowclose || gnome-control-center wifi &:}%{A}
+format-disconnected-foreground = ${colors.muted}
+
+ramp-signal-0 = 
+; ramp-signal-0-foreground = #00ff00
+; ramp-signal-foreground = ${colors.foreground-alt}
+
+[module/date]
+type = internal/date
+interval = 5
+
+label = %time%
+
+; Toggle the calendar on click
+time = %{A1:xdotool search --onlyvisible --class gnome-calendar windowclose || gnome-calendar &:}%l:%M%{A}
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume>
+; label-volume = VOL %percentage%%
+; label-volume-foreground = ${root.foreground}
+
+label-muted =  
+label-muted-foreground = ${colors.muted}
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+full-at = 98
+
+; format-charging = <ramp-capacity> <label-charging>
+format-charging = %{A1:xdotool search --onlyvisible --class gnome-control-center windowclose || gnome-control-center power &:}<ramp-capacity>%{A}
+; label-charging-foreground = #4c566a
+; format-charging-underline = #ffb52a
+
+format-discharging = %{A1:xdotool search --onlyvisible --class gnome-control-center windowclose || gnome-control-center power &:}<ramp-capacity> <label-discharging>%{A}
+; format-discharging-foreground = ${colors.alert}
+
+format-full = %{A1:xdotool search --onlyvisible --class gnome-control-center windowclose || gnome-control-center power &:}%{A}
+
+; TODO: Add colors?
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+; ramp-capacity-foreground = ${colors.foreground-alt}
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+;pseudo-transparency = false
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+; vim:ft=dosini

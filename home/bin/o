@@ -1,0 +1,57 @@
+#!/bin/sh -e
+#
+# Swiss army knife file opener.
+#
+# How is this different than xdg-open/mimeopen?
+# - Can open multiple files at once, eg: o *.jpg
+# - Handles terminal window tabbing (swallowing)
+# - Doesn't fork a new process and terminal apps are run in the same terminal
+# - Doesn't hide the program's stdout/stderr
+# - Correctly handles weird filenames, including starting with a hyphen
+# - Special handling for viewing markdown and other documents
+# - Is easier to type :)
+
+if [ "$1" = "" ]; then
+    # echo "Usage: $0 <files...>"
+    # exit 1
+    lf
+    exit 0
+fi
+
+case `file --mime-type -bL -- "$1"` in
+image/*)
+    i3-tabbed sxiv -b -- "$@" ;;
+
+video/*)
+    i3-tabbed mpv -- "$@" ;;
+
+# application/pdf | application/epub+zip)
+application/pdf)
+    i3-tabbed zathura -- "$@" ;;
+
+audio/*)
+    # Don't tab because mpv won't open a window
+    mpv --audio-display=no -- "$@" ;;
+
+inode/directory)
+    lf -- "$@" ;;
+
+application/gzip | application/java-archive | application/x-7z-compressed | application/x-bzip2 \
+    | application/x-rar | application/x-tar | application/x-xz | application/zip)
+    lf-archive "$@" ;;
+
+audio/* | font/* | image/* | model/* | video/*)
+    # Fallback to using mimeopen for unknown media types
+    i3-tabbed mimeopen --magic-only --no-ask -- "$@" ;;
+
+*)
+    # Unknown mimetype, use the file extension to figure out what to do from here
+    case "$1" in
+    *.md | *.rst | *.docx | *.odt | *.epub)
+        i3-tabbed pandoc-view "$1" ;;
+    *.[1-8])
+        man --local-file -- "$@" ;;
+    *)
+        $EDITOR -- "$@" ;;
+    esac
+esac

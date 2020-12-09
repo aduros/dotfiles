@@ -1,0 +1,11 @@
+#!/bin/sh -e
+#
+# Remove project tags from the global index
+
+# project_root=`git rev-parse --show-toplevel`
+project_root="$PWD"
+
+tags_db="$HOME/.cache/bruno-ctags"
+flattened=`echo $project_root | sed 's!/!__!g'`
+
+rm -r "$tags_db"/"$flattened"

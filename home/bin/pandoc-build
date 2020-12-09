@@ -1,0 +1,20 @@
+#!/bin/sh -e
+#
+# Quickly convert markdown (or other filetypes) into html/pdf/docx
+
+if [ "$2" = "" ]; then
+    echo "Usage: $0 <input> <output>"
+    exit 1
+fi
+
+input="$1"
+output="$2"
+
+case "$output" in
+*.html)
+    pandoc "$input" -o "$output" -s --include-in-header ~/.config/pandoc-build/include.html
+    ;;
+*)
+    pandoc "$input" -o "$output" -s
+    ;;
+esac

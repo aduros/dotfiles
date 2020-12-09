@@ -1,0 +1,4 @@
+%SOURCE_HEADER%
+#include "%PATH_NOEXTENSION%.h"
+
+%CURSOR%

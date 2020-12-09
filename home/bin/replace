@@ -1,0 +1,10 @@
+#!/bin/bash -e
+#
+# Quick search and replace.
+
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <old> <new> [path...]"
+    exit 1
+fi
+
+rg --files -0 -- "${@:3}" | xargs -0 sed --in-place --separate --follow-symlinks "s!$1!$2!g" --

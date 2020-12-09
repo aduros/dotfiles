@@ -1,0 +1,22 @@
+[Default Applications]
+image/bmp=sxiv.desktop
+image/jpeg=sxiv.desktop
+image/png=sxiv.desktop
+image/tiff=sxiv.desktop
+image/webp=sxiv.desktop
+inode/directory=lf.desktop
+text/plain=nvim.desktop
+application/pdf=org.pwmt.zathura.desktop
+text/calendar=calendar-import.desktop
+
+# Open archives in lf-archive
+application/gzip=lf-archive.desktop
+application/java-archive=lf-archive.desktop
+application/x-7z-compressed=lf-archive.desktop
+application/x-bzip2=lf-archive.desktop
+application/x-rar=lf-archive.desktop
+application/x-tar=lf-archive.desktop
+application/x-xz=lf-archive.desktop
+application/zip=lf-archive.desktop
+
+# Below lines automatically added by desktop environment

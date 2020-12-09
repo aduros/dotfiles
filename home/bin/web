@@ -1,0 +1,13 @@
+#!/bin/sh -e
+#
+# Quick and dirty web server
+#
+# Usage: web [directory]
+
+dir="$1"
+
+if [ "$dir" ]; then
+    cd "$dir"
+fi
+
+python3 -m http.server 7001

@@ -1,0 +1,19 @@
+#!/bin/bash -e
+#
+# Opens an archive (zip, tar, etc) in lf.
+
+if [ "$1" = "" ]; then
+    echo "Usage: $0 <archive>"
+    exit 1
+fi
+
+mnt=`mktemp -d /tmp/lf-archive-XXX`
+archivemount "$1" "$mnt" -o nosave
+
+cleanup () {
+    fusermount -u "$mnt"
+    rmdir "$mnt"
+}
+trap cleanup SIGHUP EXIT
+
+lf -- "$mnt"

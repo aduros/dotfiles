@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Lf Archive Viewer
+Exec=lf-archive %F
+Icon=system-file-manager
+Terminal=true
+StartupNotify=true
+Type=Application
+Categories=System;Utility;Core;FileTools;FileManager;
+
+Hidden=true

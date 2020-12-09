@@ -1,0 +1,19 @@
+/** Geary */
+@binding-set BrunoGearyBindings {
+  /* bind "h" { "navigate" (page-left) }; */
+  bind "t" { "navigate" (step-down) };
+  bind "n" { "navigate" (step-up) };
+  /* bind "s" { "navigate" (page-right) }; */
+
+  bind "r" { "reply-conversation-sender" () };
+  bind "<Shift>r" { "reply-conversation-all" () };
+  bind "f" { "forward-conversation" () };
+
+  bind "u" { "mark-conversations-read" (0) };
+  bind "d" { "archive-conversations" () };
+
+  bind "slash" { "search" () };
+}
+window.geary-main-window {
+  -gtk-key-bindings: BrunoGearyBindings;
+}
