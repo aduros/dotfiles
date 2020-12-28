@@ -1,0 +1,8 @@
+#!/bin/sh -e
+#
+# Parses URLs from standard input and opens the browser if a link was found. If multiple links were
+# found, show a menu for the user to pick one. Used by xterm.
+#
+# TODO(2020-12-11): Handle email addresses too?
+
+grep -Eo '\bhttps?://\S+\b' | uniq | ifne rofi -dmenu -i -p "Open URL" -auto-select | xargs xdg-open

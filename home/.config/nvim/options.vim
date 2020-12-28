@@ -1,5 +1,5 @@
 " File types
-" autocmd BufNewFile,BufRead *.hx set filetype=haxe
+autocmd BufNewFile,BufRead *.hx set filetype=haxe
 autocmd BufNewFile,BufRead *.jsfl set filetype=javascript
 autocmd BufNewFile,BufRead ~/.config/dunst/dunstrc set filetype=dosini
 autocmd BufNewFile,BufRead ~/.config/polybar/config set filetype=dosini
@@ -11,10 +11,10 @@ autocmd FileType haxe setlocal commentstring=//%s
 autocmd FileType lf setlocal commentstring=#%s
 
 " Project specific code-styles
-autocmd BufNewFile,BufRead ~/remote/haxe/* setlocal noexpandtab
-autocmd BufNewFile,BufRead ~/remote/html-externs/* setlocal noexpandtab
-autocmd BufNewFile,BufRead ~/remote/2DKit/intellij-haxe/* setlocal sw=2
-autocmd BufNewFile,BufRead ~/remote/2DKit/core/src/box2d/* setlocal noexpandtab
+autocmd BufNewFile,BufRead ~/local/haxe/* setlocal noexpandtab
+autocmd BufNewFile,BufRead ~/local/html-externs/* setlocal noexpandtab
+autocmd BufNewFile,BufRead ~/local/2DKit/intellij-haxe/* setlocal sw=2
+autocmd BufNewFile,BufRead ~/local/2DKit/core/src/box2d/* setlocal noexpandtab
 
 " Validate XML syntax on write (skips schema validation)
 " autocmd BufWritePost *.xml call AsyncCommand("xmllint --postvalid " . expand("%:p"), "ShowErrors")
@@ -31,7 +31,7 @@ autocmd BufWritePost ~/.lesskey silent !lesskey <afile> > /dev/null
 function! MakeExecutable ()
     if getline(1) =~ "^#!"
         exec "silent !chmod +x '" . expand("%:p") . "'"
-        " filetype detect
+        filetype detect
     endif
 endfunction
 autocmd BufWritePost * call MakeExecutable()
@@ -57,6 +57,9 @@ set noswapfile " More trouble than they're worth
 
 " Remember lots of history
 set viminfo=!,'10000,<50,s1000,h
+
+" Restore the last cursor position when reopening files
+autocmd BufReadPost * silent! normal! g`"zz
 
 " General options
 let mapleader=","
@@ -104,6 +107,10 @@ set winwidth=100
 set previewheight=20
 set laststatus=1
 set mouse=a
+
+" Soft wrapping when editting textareas from tridactyl
+set linebreak
+autocmd FileType text setlocal textwidth=0 wrap
 
 " Add a 1 character margin so vertical splits can breathe a bit
 " set foldcolumn=1
@@ -173,9 +180,6 @@ set tags=$HOME/.cache/bruno-ctags/*/tags
 
 " Make <tab> be contextual completion
 " let g:SuperTabDefaultCompletionType = "context"
-
-" Plugin auto-pairs
-let g:AutoPairsMultilineClose=0
 
 " Plugin vimwiki
 let g:vimwiki_list = [{"path": "~/data", "syntax": "markdown", "ext": ".md", "links_space_char": "-"}]

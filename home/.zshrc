@@ -4,12 +4,45 @@
 #
 # NOTE: This file is distributed, don't put passwords in here!
 
+lfcd () {
+    local file="$HOME/.cache/lf-last-dir-path"
+
+    # Run in a subshell so cleanup works as expected
+    (
+        # The file that will contain all the directories mounted inside of lf
+        export LF_MOUNTS=`mktemp`
+
+        cleanup () {
+            # Unmount any directories that were mounted inside of lf
+            if [ -f "$LF_MOUNTS" ]; then
+                while IFS= read -r mnt; do
+                    umount "$mnt"
+                    rmdir "$mnt"
+                done < "$LF_MOUNTS"
+                rm "$LF_MOUNTS"
+            fi
+        }
+        trap cleanup EXIT
+
+        lf -last-dir-path "$file" -- "$@"
+    )
+
+    cd "`cat "$file"`"
+}
+# Can be set by i3 to launch lfcd on startup. This should be near the top of this file to run as
+# soon as possible.
+if [ "$_START_LFCD" ]; then
+    unset _START_LFCD
+    lfcd
+fi
+
 alias config="git --git-dir=$HOME/data/.config.git --work-tree=$HOME"
 
 # Set default args on existing commands
 alias cp="cp -r"
 alias df="df -h"
 alias du="du -bhs"
+alias free="free -h"
 alias egrep="egrep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias grep="grep --color=auto"
@@ -29,12 +62,16 @@ alias feh="i3-tabbed feh"
 alias sxiv="i3-tabbed sxiv"
 alias mpv="i3-tabbed mpv"
 alias zathura="i3-tabbed zathura"
+alias gimp="i3-tabbed gimp"
 
 # New basic commands
 alias e="ls"
 alias v="$EDITOR"
+alias fd="fdfind"
 alias trash="mv -t ~/trash -iv --"
 alias freezer="mv -t ~/freezer -iv --"
+# $LESSOPEN input filter breaks tailing, so create a new alias just for tailing
+alias follow="less --no-lessopen +F --"
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -51,7 +88,8 @@ alias ....="cd ../../.."
 
 # Create and enter a temporary workspace directory. Use $OLDPWD or cd - to access the original dir
 tmp () {
-    local dir=`mktemp --directory /tmp/dir-XXX`
+    mkdir -p ~/trash
+    local dir=`mktemp --directory ~/trash/tmp-XXX`
     pushd "$dir" > /dev/null
     "${@:1}"
 }
@@ -62,6 +100,20 @@ swap () {
     mv "$1" "$temp"
     mv "$2" "$1"
     mv "$temp" "$2"
+}
+
+# Running duc with no arguments launches the gui
+duc () {
+    if [ "$#" -gt 0 ] && [ "$1" != "gui" ]; then
+        command duc "$@"
+    else
+        if [ "$1" != "gui" ]; then
+            local gui="gui"
+        fi
+        # TODO(2020-12-20): cd to the last open directory if duc supports it
+        # https://github.com/zevv/duc/issues/269
+        i3-tabbed duc $gui "$@"
+    fi
 }
 
 # Extract zips and other archives
@@ -84,26 +136,10 @@ x () {
 }
 compctl -/g '*.(tar|tar.gz|tgz|tar.bz2|tbz2|tar.xz|txz|zip|jar|apk|ipa|rar|7z)' x
 
-lfcd () {
-    local file="$HOME/.cache/lf-last-dir-path"
-    lf -last-dir-path "$file" "$@"
-    local dir=`cat "$file"`
-    cd "$dir"
-}
-# Passed by i3's launcher keybinds
-if [ "$_BRUNO_RUN_LF" ]; then
-    unset _BRUNO_RUN_LF
-    lfcd
-fi
-if [ "$_BRUNO_RUN_EDITOR" ]; then
-    unset _BRUNO_RUN_EDITOR
-    $EDITOR ~/data/index.md
-fi
-
 # Prompt
 autoload -U colors && colors
 PS1=""
-if [ `whoami` != "bruno" ]; then
+if [ "$USER" != "bruno" ] && [ "$USER" != "ubuntu" ]; then
     PS1="%{$fg[red]%}%n@"
 fi
 if [ "$SSH_TTY" ]; then
@@ -138,27 +174,30 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 
-# If we're running in X, automatically alert when a command ends on another workspace
-if [ -n "$WINDOWID" ]; then
-    precmd () {
+precmd () {
+    # Switch to beam cursor
+    echo -ne '\e[6 q'
+
+    # If we're running in X, automatically alert when a command ends on another workspace
+    if [ -n "$WINDOWID" ]; then
         local exitCode="$?"
         # TODO: Run in background?
         if [ "`xdotool get_desktop`" != "`xdotool get_desktop_for_window $WINDOWID`" ]; then
-            local icon=`[ "$exitCode" = 0 ] && echo terminal || echo error`
+            local icon=`[ "$exitCode" = 0 ] && echo octopi-ok || echo octopi-error`
             local lastCommand=`history | tail -n 1 | sed -e 's/^\s*[0-9]\+\s*//'`
-            notify-send --urgency=low -i "$icon" "$lastCommand"
+            notify-send --urgency=low -i "$icon" "Exit code $exitCode" "<tt>$lastCommand</tt>"
             if [ "$exitCode" != 0 ]; then
                 echo -ne "\a" # Many terminals signal the workspace as urgent on a bell character
             fi
         fi
-    }
-fi
+    fi
+}
 
 # Update the window title
 preexec () {
     local title=""
-    if [ `whoami` != "bruno" ]; then
-        title="`whoami`"
+    if [ "$USER" != "bruno" ] && [ "$USER" != "ubuntu" ]; then
+        title="$USER"
     fi
     if [ "$SSH_TTY" ]; then
         title="$title@$HOST"
@@ -210,6 +249,22 @@ unset '_comps[todo]'
 # Bindings
 #
 
+# Disable ctrl-S XON/OFF flow control
+# setopt noflowcontrol
+stty -ixon # Works inside of other programs
+
+# Parity with readline
+bindkey ^u backward-kill-line
+
+# Dvorak directions
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 't' vi-down-line-or-history
+bindkey -M menuselect 'n' vi-up-line-or-history
+bindkey -M menuselect 's' vi-forward-char
+
+bindkey ^h backward-word
+bindkey ^s forward-word
+
 # CTRL-O: lfcd
 _go_lfcd () {
     lfcd
@@ -234,42 +289,40 @@ _bind_editor () {
 zle -N _bind_editor
 bindkey '^v' _bind_editor
 
-# CTRL-H: cd ..
-_go_up () {
-    cd ..
-    zle reset-prompt
-}
-zle -N _go_up
-bindkey '^h' _go_up
-
 # Setup z: https://github.com/rupa/z
 _Z_DATA="$HOME/.cache/z_data"
+touch "$_Z_DATA"
 . ~/.config/shell/z.sh
 
 # CTRL-Z: complete the current word with z
-z_word_complete () {
-    tokens=(${(z)LBUFFER})
-    lastWord="${tokens[-1]}"
-    if [ "$lastWord" ]; then
-        result=`z -e -- "$lastWord"`
-        if [ "$result" ]; then
-            if [ "$#tokens" = 1 ]; then
-                # If it's the only word, cd there immediately
-                cd "$result"
-                LBUFFER=""
-                zle reset-prompt
-            else
-                # Otherwise expand the word only
-                tokens[-1]="$result/"
-                LBUFFER="${tokens[@]}"
-                # zle reset-prompt
-                # return 0
-            fi
+_bind_z () {
+    local res=`z-history | fzf --tac --reverse --height 40% --prompt "z> " | sed "s|^~/|$HOME/|"`
+    if [ "$res" ]; then
+        if [ "$LBUFFER" ]; then
+            LBUFFER="$LBUFFER${(q)res} "
+        else
+            res=`echo "$res" `
+            cd "$res"
         fi
     fi
+    zle reset-prompt
 }
-zle -N z_word_complete
-bindkey '^z' z_word_complete
+zle -N _bind_z
+bindkey '^z' _bind_z
+
+_bind_recent () {
+    local res=`file-history | fzf --reverse --height 40% --prompt "Hist> " | sed "s|^~/|$HOME/|"`
+    if [ "$res" ]; then
+        if [ "$LBUFFER" ]; then
+            LBUFFER="$LBUFFER${(q)res} "
+        else
+            o "$res"
+        fi
+    fi
+    zle reset-prompt
+}
+zle -N _bind_recent
+bindkey '^j' _bind_recent
 
 source ~/.config/shell/fzf/completion.zsh
 source ~/.config/shell/fzf/key-bindings.zsh

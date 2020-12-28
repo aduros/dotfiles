@@ -1,0 +1,3 @@
+# Dvorak
+"\C-h": backward-word
+"\C-s": forward-word

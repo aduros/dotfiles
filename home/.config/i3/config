@@ -9,13 +9,17 @@ bindsym $mod+Shift+a focus child
 workspace_auto_back_and_forth yes
 hide_edge_borders both
 
-# bindsym Print exec ~/bin/screenshot
-# bindsym Pause exec ~/bin/genpass
+bindsym Print exec --no-startup-id capture --clipboard
+bindsym $mod+Print exec --no-startup-id capture | xargs -d '\n' share
+# bindsym XF86Search exec --no-startup-id generate-password
+bindsym $mod+Insert exec --no-startup-id generate-password
+bindsym $mod+XF86MonBrightnessUp exec --no-startup-id backlight
+bindsym $mod+XF86MonBrightnessDown exec --no-startup-id backlight
 
 # Screen locking
 # Bind to the real escape key using keycode 9 because capslock is also mapped to escape
-bindcode 9 exec --no-startup-id bruno-lock
-bindcode $mod+9 exec --no-startup-id bruno-lock suspend
+bindcode 9 exec --no-startup-id lock-screen
+bindcode $mod+9 exec --no-startup-id lock-screen suspend
 bindcode $mod+Shift+9 exec --no-startup-id gnome-session-quit --power-off
 
 default_orientation horizontal
@@ -37,21 +41,30 @@ assign [class="^Mail$"] 3
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
-# Terminal applications. They should always run in a login shell, and use the current directory of
-# the focused window.
-bindsym $mod+Return exec --no-startup-id cd "`xcwd`" && x-terminal-emulator
-bindsym $mod+o exec --no-startup-id cd "`xcwd`" && _BRUNO_RUN_LF=1 x-terminal-emulator
-bindsym $mod+v exec --no-startup-id cd "`xcwd`" && _BRUNO_RUN_EDITOR=1 x-terminal-emulator
-
 # Kill focused window
 bindsym $mod+d kill
+
+# Terminal applications. They should always use the current directory of the focused window.
+bindsym $mod+Return exec --no-startup-id cd "`xcwd`" && x-terminal-emulator
+bindsym $mod+o exec --no-startup-id cd "`xcwd`" && _START_LFCD=1 x-terminal-emulator
+# Open personal wiki
+bindsym $mod+v exec --no-startup-id cd "`xcwd`" && x-terminal-emulator -e "$EDITOR +VimwikiIndex && $SHELL"
+# Append to today's diary
+bindsym $mod+Shift+V exec --no-startup-id cd "`xcwd`" && x-terminal-emulator -e "$EDITOR +VimwikiMakeDiaryNote +norm!\\ G && $SHELL"
+# bindsym $mod+g exec --no-startup-id cd "`xcwd`" && x-terminal-emulator -e "gitui && $SHELL"
+
+# Open recent files
+bindsym $mod+j exec --no-startup-id file-history | rofi -dmenu -i -p Hist | sed "s|^~/|$HOME/|" | xargs -d '\n' xdg-open
+bindsym $mod+z exec --no-startup-id cd "`z-history | tac | rofi -dmenu -i -p z | sed "s|^~/|$HOME/|"`" && x-terminal-emulator
 
 # Rofi dialogs
 bindsym $mod+e exec --no-startup-id rofi -modi drun -show drun -show-icons
 bindsym $mod+Tab exec --no-startup-id rofi -show window -show-icons
 bindsym $mod+c exec --no-startup-id ~/bin/calendar-add
 bindsym $mod+b exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+bindsym $mod+Shift+b exec --no-startup-id xsel-edit
 bindsym $mod+i exec --no-startup-id ~/.local/bin/rofimoji --insert-with-clipboard --skin-tone neutral --prompt Emoji
+bindsym $mod+backslash exec --no-startup-id rofi -show ssh
 
 # For quick maths
 bindsym $mod+m exec --no-startup-id xterm -title "Calculator" -geometry 40x15 -fs 16 -e /usr/bin/node
@@ -59,6 +72,8 @@ for_window [title="^Calculator$"] floating enable
 
 # Other app launch bindings
 bindsym $mod+w exec x-www-browser --new-window about:blank
+# bindsym $mod+shift+w exec x-www-browser --new-window --search "`xsel`"
+bindsym $mod+shift+w exec x-www-browser --private-window about:blank
 
 # change focus
 bindsym $mod+h focus left
@@ -76,11 +91,10 @@ bindsym $mod+Shift+S move right
 # Doesn't wrap...
 # bindsym $mod+Shift+grave move output right
 
-# split in horizontal orientation
-bindsym $mod+u split h
-
-# split in vertical orientation
-bindsym $mod+j split v
+# # split in horizontal orientation
+# bindsym $mod+u split h
+# # split in vertical orientation
+# bindsym $mod+j split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen
@@ -137,6 +151,7 @@ bindsym F7 exec --no-startup-id unfuck-touchpad
 
 # Startup applications
 exec --no-startup-id setxkbmap -option caps:escape -option ctrl:swap_lwin_lctl
+exec --no-startup-id backlight
 exec --no-startup-id ~/.config/i3/column-layout
 exec --no-startup-id picom
 exec --no-startup-id hsetroot -solid "#1c2027"

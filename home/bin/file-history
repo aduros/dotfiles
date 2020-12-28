@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+#
+# Read or write to GTK's recent file list.
+
+import gi
+import os
+import re
+import sys
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gio, GLib
+
+manager = Gtk.RecentManager.get_default()
+
+if len(sys.argv) > 1:
+    # Add the given files to the recent file list
+    for file in sys.argv[1:]:
+        uri = Gio.File.new_for_path(file).get_uri()
+        manager.add_item(uri)
+    GLib.idle_add(Gtk.main_quit)
+    Gtk.main()
+
+else:
+    # Print the recent file list, starting with most recently used
+    home = re.compile("^"+os.environ["HOME"]+"/")
+    for item in sorted(manager.get_items(), key=lambda x: x.get_modified(), reverse=True):
+        if item.exists():
+            print(home.sub("~/", item.get_uri_display()))

@@ -1,8 +1,10 @@
+" Tridactyl persists settings from the last session in its own storage, wipe it
+sanitise tridactyllocal tridactylsync
+
 set theme shydactyl
 colors base16-nord
 
-" Override to not add the window class which messes with xterm xresources
-set editorcmd x-terminal-emulator -e "$EDITOR %f '+normal!%lGzv%c|'"
+set editorcmd i3-tabbed x-terminal-emulator -e "$EDITOR -c 'set nofixeol' %f '+normal!%lGzv%c|'"
 
 set newtab about:blank
 
@@ -17,6 +19,8 @@ bind . tabprev
 bind p tabnext
 bind > tabmove -1
 bind P tabmove +1
+bind --mode=ex <C-h> text.backward_word
+bind --mode=ex <C-s> text.forward_word
 set hintchars aoeuidhtnsqjkxbmwvzpyfgcrl
 
 " Opening tabs
@@ -24,6 +28,13 @@ bind o fillcmdline open
 bind <C-o> current_url open
 bind O fillcmdline tabopen
 bind <C-O> current_url open
+
+" TODO(2020-12-18): Many of these don't work due to being used by firefox itself...
+" bind --mode=browser <C-.> tabprev
+" bind --mode=browser <C-p> tabnext
+" bind --mode=browser <C-d> tabclose
+" bind --mode=browser <C-h> back
+" bind --mode=browser <C-s> forward
 
 " Find in page
 bind / fillcmdline find
@@ -35,9 +46,13 @@ bind L findnext -1
 bind gp clipboard open
 bind gw tabdetach
 
+" Make yy use canonical / short links on the 5 websites that support them
+" Disabled: problems on youtube and maybe others
+" bind yy clipboard yankcanon
+
 " Allow Ctrl-a to select all in the commandline
-unbind --mode=ex <C-a>
-unbind --mode=ex <C-c>
+" unbind --mode=ex <C-a>
+" unbind --mode=ex <C-c>
 
 " Subscribe to an RSS feed
 command subscribe js location.href="https://aduros.com/miniflux/bookmarklet?uri="+encodeURIComponent(location.href)
@@ -50,3 +65,10 @@ bind ,a archive
 " Open the current URL in Chrome
 command chrome composite js location.href | shellescape | exclaim google-chrome
 bind ,c chrome
+
+" URL redirects
+autocmd DocStart ^https?://www\.reddit\.com urlmodify -t www old
+autocmd DocStart ^https?://en\.wikipedia\.org/wiki/ urlmodify -t en.wikipedia.org/wiki/ wikiwand.com/en/
+
+" Load custom JS extensions
+jsb -r custom.js

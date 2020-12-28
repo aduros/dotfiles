@@ -4,5 +4,5 @@ event=`echo "" | rofi -dmenu -lines 0 -i -p "Add to calendar"`
 
 if [ "$event" ]; then
     gcalcli quick "$event"
-    notify-send -i vcalendar "Added to calendar" "$event"
+    notify-send -i calendar "Added to calendar" "$event"
 fi

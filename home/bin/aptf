@@ -1,0 +1,18 @@
+#!/bin/sh -e
+#
+# Wraps apt with fzf.
+#
+# Usage: aptf [command]
+
+if [ "$#" -lt 1 ]; then
+    default_command="show"
+fi
+
+case "$1" in
+install | reinstall | remove | purge)
+    sudo="sudo "
+    ;;
+esac
+
+apt-cache search "" | fzf --multi --prompt "${sudo}apt $default_command$@ " --reverse --height 40 |
+    cut -f 1 -d " " | xargs --no-run-if-empty ${sudo}apt $default_command "$@"

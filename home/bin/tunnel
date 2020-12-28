@@ -1,7 +1,15 @@
-#!/bin/sh
+#!/bin/sh -e
+#
+# Makes localhost available to the rest of the Internet.
 
-LOCAL_PORT="${1-80}"
-REMOTE_PORT="${2-9001}"
+local_port="${1-80}"
+remote_port="${2-9999}"
 
-echo "Tunneling aduros.com:$REMOTE_PORT to 127.0.0.1:$LOCAL_PORT"
-ssh -NR "$REMOTE_PORT:127.0.0.1:$LOCAL_PORT" catdap
+echo "Tunneling aduros.com:$remote_port to 127.0.0.1:$local_port"
+
+# Nginx on the server is configured to proxy tunnel.aduros.com to port 9999
+if [ "$remote_port" = "9999" ]; then
+    echo "SSL endpoint is available at https://tunnel.aduros.com"
+fi
+
+ssh -NR "$remote_port:127.0.0.1:$local_port" -o ExitOnForwardFailure=yes aduros

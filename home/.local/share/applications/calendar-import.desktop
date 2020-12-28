@@ -3,3 +3,4 @@ Hidden=true
 Name=Import ICS to calendar
 Exec=calendar-import %F
 Type=Application
+MimeType=text/calendar;

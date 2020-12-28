@@ -21,6 +21,20 @@ noremap <Space> <C-W>w
 " Shift-space is remapped to F13 by the terminal in ~/.Xresources to make this work
 noremap <F13> <C-W>W
 
+" Parity with zsh
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+cnoremap <C-h> <C-Left>
+cnoremap <C-s> <C-Right>
+
+" Can't cunmap original <C-r>?
+" For some reason this messes up <leader>r mapping
+" cnoremap <C-r> <C-e><C-u>History:<CR>
+
+" Trying this out
+nnoremap <C-r> <nop>
+nnoremap U <C-r>
+
 " Content searching
 let g:rg_highlight = 1
 nmap <leader>f :Rg<space>
@@ -62,10 +76,10 @@ nmap <c-o> :Lf<CR>
 nmap <F14> :call OpenLfIn("%", "vsplit ")<CR>
 
 " nmap <leader>t :FZF<CR>
-nmap <c-f> :FZF<CR>
-nmap <leader>h :History<CR>
+nmap <c-f> :Files<CR>
+nmap <c-j> :History<CR>
 nmap <leader>t :Tags<CR>
-nmap <leader>we :call fzf#vim#files("~/data", {"source": "fd -e md"})<CR>
+nmap <leader>we :call fzf#vim#files("~/data", {"source": "fdfind -e md"})<CR>
 " Also disables the ctrl-t binding which is not dvorak-friendly
 let g:fzf_action = {
     \ 'ctrl-s': 'vsplit' }
@@ -79,7 +93,11 @@ map <leader>/ gcc
 map <leader>? g<c
 vmap <leader>/ gc
 vmap <leader>? g<
-" nmap <leader>c yygc>p
+
+" Put a commented out duplicate of the current line above it
+" TODO(2020-12-10): Don't use marks or clobber the unnamed register
+" TODO(2020-12-10): Extend support to visual mode?
+nmap <leader>c mcyyPg>c`c
 
 " Sort lines and remove duplicates using <leader>s
 map <leader>s :!LC_ALL=C sort -u<CR>
@@ -88,14 +106,7 @@ map <leader>s :!LC_ALL=C sort -u<CR>
 nmap <leader>x Ovar <C-R>. = <C-R>";<Esc>
 
 " Handle navigation with z
-function! NavigateZ (arg)
-    let command = "z-external -e \"" . a:arg . "\""
-    let output = substitute(system(command), "\n$", "", "")
-    echo output
-    execute "cd " . output
-endfunction
-command! -nargs=+ Z call NavigateZ(<f-args>)
-nmap <leader>z :Z<space>
+nmap <silent> <c-z> :call fzf#run(fzf#wrap({"source": "z-history", "sink": "cd", "options": ["--tac", "--prompt", "z> "]}))<CR>
 
 " Handle standard clipboard keys
 vmap <c-c> "+y

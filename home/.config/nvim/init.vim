@@ -8,7 +8,7 @@ call plug#begin('~/.config/nvim/plugged')
 " After modifying this list, run :PlugInstall
 Plug 'tomtom/tcomment_vim'
 Plug 'wellle/targets.vim'
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
 Plug 'skywind3000/asyncrun.vim'
 
 " Minimal tab completion
@@ -59,6 +59,8 @@ Plug 'stefandtw/quickfix-reflector.vim'
 
 " Really more for the markdown features
 Plug 'vimwiki/vimwiki'
+" Plug 'godlygeek/tabular'
+" Plug 'plasticboy/vim-markdown'
 
 " Language-server client for IDE features
 Plug 'natebosch/vim-lsc'
@@ -67,6 +69,14 @@ call plug#end()
 
 source ~/.config/nvim/options.vim
 source ~/.config/nvim/mappings.vim
+
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_autowrite = 1
+let g:vim_markdown_no_extensions_in_markdown = 1
+set nofoldenable
+set conceallevel=2
+highlight markdownLinkText cterm=underline
 
 " Minimalist brace matching
 inoremap (<CR> (<CR>)<C-c>O
@@ -104,11 +114,11 @@ function! OnBuildComplete()
     echo
 
     if g:asyncrun_code == 0
-        exec "silent !notify-send -i ~/.config/nvim/icon-ok.svg 'Build passed' '" . project . "'"
+        exec "silent !notify-send -i dialog-ok 'Build passed' '" . project . "'"
 
         cclose
     else
-        exec "silent !notify-send -i ~/.config/nvim/icon-error.svg 'Build FAILED' '" . project . "'"
+        exec "silent !notify-send -i dialog-no 'Build FAILED' '" . project . "'"
 
         let curwin = winnr()
         cwindow
@@ -162,15 +172,6 @@ function! s:template_keywords()
     let package = substitute(package, "\/", ".", "g")
     silent! %s/%PACKAGE%/\=package/g
 
-    " let project_root = substitute(abspath, "\/src/.*", "", "")
-    " let header_path = project_root . "/etc/SOURCE_HEADER"
-    " if filereadable(header_path)
-    "     let header = join(readfile(header_path), "\n")
-    "     silent! %s/%SOURCE_HEADER%/\=header/g
-    " elseif search("%SOURCE_HEADER%")
-    "     " Remove the entire line with SOURCE_HEADER if we don't have one
-    "     execute 'normal! "_dd'
-    " endif
     let parts = split(expand("%:p:h"), "/")
     while !empty(parts)
         let header_path = "/" . join(parts, "/") . "/.header"
@@ -185,6 +186,11 @@ function! s:template_keywords()
         " Remove the entire line with SOURCE_HEADER if we don't have one
         execute 'normal! "_dd'
     endif
+
+    let date = strftime("%FT%TZ")
+    silent! %s/%DATE%/\=date/g
+
+    silent! %s/%TITLE%/\=g:bruno_template_title/g
 
     " Jump to %CURSOR%
     if search("%CURSOR%")
@@ -297,9 +303,21 @@ function ShowTodos(...)
     endif
 endfunction
 function ExpandTodo(tag)
-    return a:tag."(".strftime("%Y-%m-%d").")"
+    return a:tag."(".strftime("%F").")"
 endfunction
 command -nargs=? -complete=file Todo :call ShowTodos(<f-args>)
 noremap <leader>d :Todo<CR>
 inoreabbrev <expr> TODO ExpandTodo("TODO")
 inoreabbrev <expr> FIXME ExpandTodo("FIXME")
+
+function OpenBlog (...)
+    let title = join(a:000)
+    let slug = substitute(tolower(title), "[ /]", "-", "g")
+    let slug = substitute(slug, "[^a-z0-9\-]", "", "g")
+    let slug = substitute(slug, "--*", "-", "g")
+
+    let g:bruno_template_title = title
+    execute "edit ~/data/website/blog/".slug.".md"
+endfunction
+command -nargs=? Blog :call OpenBlog(<f-args>)
+autocmd BufNewFile ~/data/website/blog/*.md call template#load("~/.config/nvim/template/other/blog.md")

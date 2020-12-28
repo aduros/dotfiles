@@ -1,0 +1,32 @@
+#!/bin/bash -e
+#
+# Paste text to a connected Android device. https://android.stackexchange.com/a/176590
+
+escape() {
+    # Encapsulate the string in $'', which enables interpretation of
+    # \xnn escapes in the string. This is not POSIX-sh, but an extension
+    # documented by bash and also supported by the Android sh.
+    echo -n "$'"
+
+    # Process each character in $1 one by one
+    for (( i=0 ; i<${#1}; i++ )); do
+        # Extract the i'th character
+        C="${1:$i:1}"
+        if [ "$C" = ' ' ]; then
+            # Encode spaces as %s, which is needed for Android's
+            # "input text" command below 6.0 Marshmellow
+            # See https://stackoverflow.com/documentation/android/9408/adb-shell/3958/send-text-key-pressed-and-touch-events-to-android-device-via-adb
+            echo -n '%s'
+        else
+            # Encode everything else as \xnn, to prevent them from being
+            # interpreted by the Android shell
+            printf '\\x%02x' "'$C"
+        fi
+    done
+    # Terminate the $''
+    echo -n "'"
+}
+
+TEXT=`xsel --clipboard`
+ESCAPED_TEXT=`escape "$TEXT"`
+adb shell input text "$ESCAPED_TEXT"

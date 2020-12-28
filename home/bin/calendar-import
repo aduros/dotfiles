@@ -1,4 +1,4 @@
 #!/bin/sh -e
 
 file="$1"
-gcalcli import "$file" && notify-send -i vcalendar "Imported to calendar" "`basename "$file"`"
+gcalcli import "$file" && notify-send -i calendar "Imported to calendar" "`basename "$file"`"

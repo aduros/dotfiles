@@ -9,6 +9,7 @@
 # - Doesn't hide the program's stdout/stderr
 # - Correctly handles weird filenames, including starting with a hyphen
 # - Special handling for viewing markdown and other documents
+# - Adds files to GTK's recently used file list
 # - Is easier to type :)
 
 if [ "$1" = "" ]; then
@@ -16,6 +17,11 @@ if [ "$1" = "" ]; then
     # exit 1
     lf
     exit 0
+fi
+
+# Add files to GTK's recently used files list
+if [ `command -v file-history` ]; then
+    file-history "$@" &
 fi
 
 case `file --mime-type -bL -- "$1"` in

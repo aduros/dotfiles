@@ -1,17 +1,7 @@
-#!/bin/bash
+#!/bin/sh -e
 #
-# Packages a git project and shares it
+# Shares a zip of a git repo.
 #
-# Usage: git-share [find args...]
+# Usage: git share [files...]
 
-umask 077
-
-ARCHIVE="/tmp/git-share-$RANDOM.zip"
-git ls-files --exclude-standard | zip "$ARCHIVE" -r -@
-
-if [ $# -ge 1 ]; then
-    find "$@" | zip "$ARCHIVE" -r -@
-fi
-
-share "$ARCHIVE"
-rm "$ARCHIVE"
+git ls-files --exclude-standard "$@" | xargs -d '\n' share

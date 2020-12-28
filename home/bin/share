@@ -1,61 +1,38 @@
-#!/bin/bash
+#!/bin/sh -e
 #
-# Uploads a file to a public web server and puts the URL in the clipboard
+# Uploads a file to a public web server and puts the URL in the clipboard.
 
-umask 077
+file="$1"
+delete_after_uploading=
 
-if [ $# -lt 1 ]; then
-    echo "Usage: ${0} FILES..."
+if [ -z "$file" ]; then
+    echo "Usage: $0 <file...>"
     exit 1
 fi
 
-# Install prerequisites
-# if [ ! `which xsel` ]; then gksudo apt-get install -y xsel; fi
-
-delete=0
-path="$1"
-
 # If a directory or multiple files are specified, make it a zip
-if [ -d "$path" ] || [ $# -gt 1 ]; then
-    zip="/tmp/share-$USER-`date +%s%N`.zip"
-    zip -r "$zip" "$@"
+if [ -d "$file" ] || [ $# -gt 1 ]; then
+    file=`mktemp /tmp/share-XXX --suffix .zip`
+    zip -r - -- "$@" > "$file"
+    delete_after_uploading=1
 
-    path=$zip
-    delete=1
-
-elif [ ! -f $path ]; then
-    echo "$path is not a file!"
+elif [ ! -f "$file" ]; then
+    echo "$file is not a sharable file!"
 fi
 
 # Create a unique file name based on the content hash
-salt=`dirname $(readlink -f $0)`/.share-salt
-hash=`cat "$path" "$salt" | md5sum -b | cut -d ' ' -f 1 | xxd -r -p | base64 | tr -d = | tr +/ -_`
+hash=`cat "$file" ~/bin/.share-salt | md5sum -b | cut -d ' ' -f 1 | xxd -r -p | base64 | tr -d = | tr +/ -_`
 
-# Append a file extension if necessary
-base=`basename $path`
-ext="${base##*.}"
-if [ "$ext" != "$base" ]; then
-    hash="$hash.$ext"
+# Upload to s3
+aws s3 cp --acl public-read --storage-class INTELLIGENT_TIERING "$file" "s3://aduros.com/share/$hash"
+
+# Delete generated zips after downloading
+if [ "$delete_after_uploading" ]; then
+    rm -f "$file"
 fi
 
-# Upload it, making sure it has read permissions at the destination
-remote="catdap:~/share/$hash"
-rsync --chmod=ugo+r -z --progress "$path" "$remote"
-
-if [ $delete -eq 1 ]; then
-    echo rm "$path"
-fi
-
-# Copy the URL to the clipboard
-url="https://share.aduros.com/$hash"
-echo -n "$url" | xsel -i
-
-# Log it to a file too in case the clipboard gets overwritten
-log=/tmp/share-$USER.log
-echo "$path" "->" "$url" >> $log
-
-# Send a notification
-notify-send "Shared $base" "URL copied to X clipboard" -i web-browser
-
-# And finally print it
-echo "Shared $path to $url"
+base=`basename "$file"`
+url="https://aduros.com/share/$hash/$base"
+notify-send "Shared $base" -i edit-copy
+echo -n "$url" | xsel --clipboard
+echo "$url"

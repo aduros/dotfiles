@@ -1,4 +1,5 @@
 @import url("userChrome.css");
+/* @import url("base16.css"); */
 
 /* Removes white loading page */
 @-moz-document url(about:blank), url(about:newtab), url(about:home) {

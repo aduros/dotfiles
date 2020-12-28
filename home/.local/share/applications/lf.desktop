@@ -6,3 +6,4 @@ Terminal=true
 StartupNotify=true
 Type=Application
 Categories=System;Utility;Core;FileTools;FileManager;
+MimeType=inode/directory;

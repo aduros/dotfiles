@@ -10,10 +10,17 @@ fi
 mnt=`mktemp -d /tmp/lf-archive-XXX`
 archivemount "$1" "$mnt" -o nosave
 
-cleanup () {
-    fusermount -u "$mnt"
-    rmdir "$mnt"
-}
-trap cleanup SIGHUP EXIT
+if [ "$LF_MOUNTS" ]; then
+    # If running lfcd, go there in the currently running instance. lfcd will handle the unmounting
+    lf -remote "send $id cd \"$mnt\""
+    echo "$mnt" >> "$LF_MOUNTS"
 
-lf -- "$mnt"
+else
+    # Otherwise spawn lf and cleanup on exit
+    cleanup () {
+        umount "$mnt"
+        rmdir "$mnt"
+    }
+    trap cleanup EXIT
+    lf -- "$mnt"
+fi

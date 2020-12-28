@@ -11,7 +11,7 @@ if [ "$encoding" = "binary" ]; then
 
     case "$mime" in
     application/x-tar | application/gzip | application/x-bzip2 | application/x-xz)
-        tar -tf -- "$file" ;;
+        tar -tf "$file" ;;
     application/zip | application/java-archive)
         zip -sf "$file" ;;
     application/x-rar)

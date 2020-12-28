@@ -1,0 +1,70 @@
+#!/bin/bash -e
+#
+# Captures a screenshot or video.
+
+output=
+mode=
+clipboard=
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -o|--output) output="$2"; shift ;;
+        -t|--type) mode="$2"; shift ;;
+        --clipboard) clipboard=1 ;;
+        -*) echo "Invalid option: $1"; exit 1 ;;
+        *) output="$1" ;;
+        # --focused
+        # --root
+    esac
+    shift
+done
+if [ -z "$mode" ]; then
+    case `mimetype --brief "$output"` in
+        image/*) mode="screenshot" ;;
+        video/*) mode="video" ;;
+    esac
+fi
+
+lock="$XDG_RUNTIME_DIR/capture-lock.pid"
+if [ -f "$lock" ]; then
+    echo "Already recording, terminating other process"
+    kill `cat "$lock"` || true
+    rm -f "$lock"
+    exit 1
+fi
+
+if [ -z "$mode" ]; then
+    mode=`printf "screenshot\nvideo" | rofi -dmenu -p Capture`
+fi
+
+region=`slop -f "%x %y %w %h" --nodecorations --highlight --color 1,1,1,0.2 --bordersize 0`
+read -r x y w h < <(echo $region)
+
+case "$mode" in
+video)
+    if [ -z "$output" ]; then
+        output=`mktemp /tmp/capture-XXX --suffix .mp4`
+    fi
+    # ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y -f pulse -i 0 "$output" &
+    ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y "$output" &
+    echo $! > "$lock"
+    echo -e "\uf03d" > $XDG_RUNTIME_DIR/polybar-capture
+    wait
+    echo > $XDG_RUNTIME_DIR/polybar-capture
+    ;;
+
+screenshot | *)
+    if [ -z "$output" ]; then
+        output=`mktemp /tmp/capture-XXX --suffix .png`
+    fi
+    import -window root -crop "${w}x${h}+${x}+${y}" "$output"
+    ;;
+esac
+
+if [ "$clipboard" ]; then
+    notify-send -i edit-copy "Copied $output to clipboard"
+    echo -n "$output" | xsel --clipboard
+fi
+
+file-history "$output"
+
+echo "$output"

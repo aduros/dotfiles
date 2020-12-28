@@ -1,15 +1,12 @@
 #!/bin/sh -e
 #
-# Usage: deploy [app-dir]
+# Deploys a directory with a start script to run as a systemd service.
 
 # The server being deployed to
-server="catdap"
+server="aduros"
 
 # The directory containing all our apps
-apps_dir="/home/bruno/apps"
-
-# The user that will run the app
-apps_user="apps"
+apps_dir="/home/ubuntu/apps"
 
 if [ "$1" != "" ]; then
     cd "$1"
@@ -33,15 +30,15 @@ echo "Uploading files to $apps_dir/$slug..."
 rsync -avz --exclude ".git/" --delete --progress ./ "$server:$apps_dir/$slug/"
 
 # Create the default systemd script
-service=`mktemp`
-cat > "$service" <<EOF
+unit="/etc/systemd/system/$slug.service"
+ssh "$server" "[ -f $unit ] || sudo tee $unit >/dev/null; sudo systemctl restart $slug" <<EOF
 [Unit]
 Description="$slug"
 After=network.target
 
 [Service]
 Environment=PRODUCTION=1
-User=$apps_user
+User=nobody
 WorkingDirectory=$apps_dir/$slug
 SyslogIdentifier=$slug
 ExecStart=$apps_dir/$slug/start
@@ -50,14 +47,10 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOF
-rsync --rsync-path="sudo rsync" --ignore-existing "$service" "$server:/etc/systemd/system/$slug.service"
-rm "$service"
 
 echo
-ssh "$server" "id -u $apps_user >/dev/null 2>&1 || useradd $apps_user; sudo systemctl restart $slug"
-
 echo "Deployed $slug."
 echo
 echo "To view logging, run 'sudo journalctl -u $slug'"
-echo "To uninstall the app, remove /etc/systemd/system/$slug.service."
+echo "To uninstall the app, remove $unit."
 # echo "App copied to $server:$apps_dir/$slug and running as a systemd service called '$slug'."

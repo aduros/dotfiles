@@ -6,5 +6,5 @@ Terminal=true
 StartupNotify=true
 Type=Application
 Categories=System;Utility;Core;FileTools;FileManager;
-
-Hidden=true
+MimeType=application/gzip;application/java-archive;application/x-7z-compressed;application/x-bzip2;application/x-rar;application/x-tar;application/x-xz;application/zip;
+NoDisplay=true

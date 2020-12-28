@@ -1,4 +1,0 @@
-#!/bin/sh -e
-
-# Delete old files from trash
-find ~/trash/* -maxdepth 0 -mtime +90 -print0 | xargs -0 rm -rf

@@ -1,0 +1,26 @@
+#!/bin/sh -e
+#
+# Sets the screen backlight.
+
+backlight="$1"
+
+if [ -z "$backlight" ]; then
+    # Guess ambient level from the camera, between 0 and 100
+    luminosity=`ffmpeg -f v4l2 -ss 1 -video_size 320x280 -i /dev/video0 -vframes 1 -f image2pipe - |
+        convert - -colorspace Gray -format "%[fx:round(100*image.mean)]" info:`
+
+    echo "Luminosity = $luminosity"
+
+    # Step the backlight based on ambient light level. These constants will need adjusting
+    if [ "$luminosity" -gt 40 ]; then
+        backlight=100
+    elif [ "$luminosity" -gt 20 ]; then
+        backlight=50
+    else
+        backlight=10
+    fi
+fi
+
+gdbus call --session --dest org.gnome.SettingsDaemon.Power \
+    --object-path /org/gnome/SettingsDaemon/Power --method org.freedesktop.DBus.Properties.Set \
+    org.gnome.SettingsDaemon.Power.Screen Brightness "<int32 $backlight>"

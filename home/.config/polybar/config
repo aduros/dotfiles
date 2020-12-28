@@ -27,6 +27,7 @@ module-margin-left = 1
 module-margin-right = 2
 
 # TODO: Tune font. The last param is important as a vertical offset
+; font-0 = NotoSans-Regular:size=10;3
 font-0 = Ubuntu:size=11;3
 ; font-0 = Roboto:style=Bold:size=10.5;3
 ; font-0 = Roboto:style=Bold:size=11;4
@@ -39,7 +40,7 @@ font-2 = Iosevka Nerd Font:style=Medium:size=16;4
 
 modules-left = i3
 modules-center = date
-modules-right = pulseaudio wifi battery
+modules-right = indicator-capture indicator-watch pulseaudio wifi battery
 
 cursor-click = pointer
 cursor-scroll = ns-resize
@@ -86,6 +87,21 @@ label-urgent = %{F#bf616a}%{T3}%{T-}%{F-}%{B#bf616a}%index%%{B-}%{F#bf616a}%{
 ; ws-icon-7 = 8;❽
 ; ws-icon-8 = 9;❾
 ; ws-icon-9 = 10;❿
+
+; The status of a ~/bin/capture video capture
+[module/indicator-capture]
+type = custom/script
+exec = pipe=$XDG_RUNTIME_DIR/polybar-capture; [ -p "$pipe" ] || mkfifo "$pipe"; tail -f "$pipe"
+tail = true
+format-foreground = ${colors.alert}
+; Click to cancel running capture
+click-left = capture
+
+; General purpose "doing some work in the background" icon
+[module/indicator-watch]
+type = custom/script
+exec = pipe=$XDG_RUNTIME_DIR/polybar-watch; [ -p "$pipe" ] || mkfifo "$pipe"; tail -f "$pipe"
+tail = true
 
 [module/wifi]
 type = internal/network

@@ -1,8 +1,11 @@
 #!/bin/sh -e
 #
-# Just a wrapper for i3lock
+# Just a wrapper for i3lock.
 
-i3lock --ignore-empty-password --show-failed-attempts -i ~/.config/bruno-lock.png
+# xset dpms 5 5 5
+# i3lock --ignore-empty-password --show-failed-attempts -i ~/.config/lock-screen.png --nofork; \
+#     xset +dpms dpms 0 0 0 &
+i3lock --ignore-empty-password --show-failed-attempts -i ~/.config/lock-screen.png
 
 if [ "$1" = "suspend" ]; then
     # Wait for the lock screen to show, otherwise the workspace will be visible for a split second
@@ -13,4 +16,7 @@ if [ "$1" = "suspend" ]; then
 
     # XPS 13 touchpad breaks after coming out of sleep so restart it
     unfuck-touchpad
+
+    # Auto adjust screen backlight
+    backlight
 fi

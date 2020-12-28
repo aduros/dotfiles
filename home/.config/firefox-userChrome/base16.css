@@ -1,0 +1,40 @@
+:root {
+  /** Background colors, from dark/light to grey. */
+  --theme-bg0: #2e3440;
+  --theme-bg1: #3b4252;
+  --theme-bg2: #434c5e;
+  --theme-bg3: #4c566a;
+
+  /** Foreground colors, from light/dark to grey. */
+  --theme-fg0: #eceff4;
+  --theme-fg1: #e5e9f0;
+  --theme-fg2: #d8dee9;
+  --theme-fg3: #d8dee9;
+
+  /** Hues. */
+  --theme-red: #bf616a;
+  --theme-orange: #d08770;
+  --theme-yellow: #ebcb8b;
+  --theme-green: #a3be8c;
+  --theme-cyan: #88c0d0;
+  /* --theme-blue: #5e81ac; */
+  --theme-blue: #81a1c1;
+  --theme-purple: #b48ead;
+}
+
+@-moz-document domain(www.google.com) {
+  body, .sfbg,  {
+    background: var(--theme-bg0) !important;
+    color: var(--theme-fg0) !important;
+  }
+  a {
+    color: var(--theme-blue) !important;
+  }
+  cite {
+    color: var(--theme-fg1) !important;
+  }
+  /* FIXME(2020-12-11) */
+  .IsZvec {
+    color: var(--theme-fg2) :important;
+  }
+}

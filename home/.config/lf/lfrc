@@ -2,6 +2,7 @@ set previewer ~/.config/lf/lf-previewer
 set scrolloff 2
 set promptfmt "\033[30;1m%w\033[0m"
 
+# Dvorak directions
 map t down
 map n up
 map h updir
@@ -11,6 +12,13 @@ map N push 10n
 
 map l search-next
 map L search-prev
+
+# backspace here means c-h
+cmap <backspace> cmd-word-back
+cmap <c-s> cmd-word
+
+# Map H to go back to previous jump
+map H push ''
 
 map <enter> open
 # map <enter> shell-pipe
@@ -23,28 +31,20 @@ map ; push :
 
 map ` mark-load
 
-# cmd open ${{
-#     # FIXME: Not really accurate for many text files, eg: .js files return application/javascript
-#     case `file --mime-type -bL -- "$f"` in
-#     text/* | inode/x-empty | application/x-tar | application/zip | application/java-archive | \
-#     application/gzip | application/x-bzip2 | application/x-xz | application/x-7z-compressed)
-#         $EDITOR -- "$f" ;;
-#     *)
-#         setsid $OPENER "$f" >/dev/null 2>&1 ;;
-#     esac
-# }}
-
 # cmd open $o "$f" || xdg-open "$f"
 cmd open $o "$f"
+
 cmd XdgOpen &xdg-open "$f"
 map ,o XdgOpen
 
+# Populate z's frecency list while moving around, just like in the shell
+cmd on-cd &z-external --add "$PWD"
+
 # Select a file by using fzf
 cmd Fzf ${{
-    # For some reason this doesn't work when lf is launched from zsh using Ctrl-O
-    #res=`fzf`
-    res=`rg --files | fzf`
-    if [ -f "$res" ]; then
+    prompt=`echo "$PWD/" | sed "s|^$HOME|~|"`
+    res=`rg --files | fzf --prompt "$prompt"`
+    if [ "$res" ]; then
         lf -remote "send $id select \"$res\""
     fi
 }}
@@ -53,39 +53,52 @@ map <c-f> Fzf
 
 # Select a file from a locate query
 cmd Locate ${{
-    res=`locate -i -- "$@" | fzf`
-    if [ -f "$res" ]; then
-        lf -remote "send $id select \"$res\""
-    elif [ -d "$res" ]; then
-        lf -remote "send $id cd \"$res\""
+    res=`locate -i -- "$@" | fzf --prompt "locate $@> "`
+    if [ "$res" ]; then
+        if [ -d "$res" ]; then
+            lf -remote "send $id cd \"$res\""
+        else
+            lf -remote "send $id select \"$res\""
+        fi
     fi
 }}
 map ,l push :Locate<space>
 
 # Select a file from a ripgrep query
 cmd Rg ${{
-    res=`rg -l -- "$@" | fzf`
-
-    if [ -f "$res" ]; then
+    res=`rg -l -- "$@" | fzf --prompt "rg $@> "`
+    if [ "$res" ]; then
         lf -remote "send $id select \"$res\""
     fi
 }}
 map ,f push :Rg<space>
 
+# Jump around with ctrl-Z
+cmd Z ${{
+    res=`z-history | fzf --tac --reverse --prompt "z> "`
+    if [ "$res" ]; then
+        lf -remote "send $id cd \"$res\""
+    fi
+}}
+map <c-z> Z
+
+# Select a recently used file
+cmd History ${{
+    res=`file-history | fzf --reverse --prompt "Hist> "`
+    if [ "$res" ]; then
+        lf -remote "send $id select \"$res\""
+    fi
+}}
+map <c-j> History
+
+# Select modified git files
 cmd GitStatus ${{
-    res=`git status --short | fzf | awk '{print $2}'`
+    res=`git status --short | fzf --reverse --prompt "git status> " | awk '{print $2}'`
     if [ "$res" ]; then
         lf -remote "send $id select \"$res\""
     fi
 }}
 map <c-g> GitStatus
-
-# Navigate with z
-cmd Z %{{
-    dir=`z-external -e -- "$@"`
-    lf -remote "send $id cd \"$dir\""
-}}
-map ,z push :Z<space>
 
 map <c-v> $$EDITOR -- "$f"
 map R $vidir
@@ -115,18 +128,38 @@ cmd Images &{{
 map i Images
 map I Images -r
 
-cmd Tmp %{{
-    dir=`mktemp --directory /tmp/dir-XXX`
-    lf -remote "send $id select \"$dir\""
-    lf -remote "send $id open"
+# Make a temporary directory then go there
+cmd GoTmp %{{
+    mkdir -p ~/trash
+    dir=`mktemp --directory ~/trash/tmp-XXX`
+    lf -remote "send $id cd \"$dir\""
 }}
-map ,t Tmp
+map gt GoTmp
 
+# Copy the path of the selected files to the clipboard
 cmd YankClipboard &{{
-    echo -n "$fx" | xsel -i --clipboard
+    echo -n "$fx" | xsel --clipboard
     lf -remote "send $id echo Copied selected file(s) to clipboard."
 }}
 map ,y YankClipboard
+
+# Select the file path currently in the clipboard
+cmd GoClipboard &{{
+    file=`xsel --clipboard`
+    lf -remote "send $id select \"$file\""
+}}
+map gp GoClipboard
+
+# Show current directory in duc
+cmd Duc &i3-tabbed duc gui
+map ,d Duc
+
+# # Called by lf-archive
+# cmd MountCd ${{
+#     mnt="$1"
+#     echo "$mnt" >> "/tmp/lf-unmount-$id"
+#     lf -remote "send $id cd \"$mnt\""
+# }}
 
 map D delete
 

@@ -14,6 +14,7 @@ rsync -av --ignore-existing "WhatsApp/Media/WhatsApp Images"/ ~/data/media/whats
 rsync -av --ignore-existing "WhatsApp/Media/WhatsApp Video"/ ~/data/media/whatsapp/
 
 # Copy to phone
+mkdir -p Books
 find ~/data/books -name '*.epub' -print0 | xargs -0 cp -vn -t Books --
 
 cd /

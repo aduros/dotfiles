@@ -7,4 +7,4 @@ if [ "$#" -lt 2 ]; then
     exit 1
 fi
 
-rg --files -0 -- "${@:3}" | xargs -0 sed --in-place --separate --follow-symlinks "s!$1!$2!g" --
+rg --files -0 -- "${@:3}" | xargs -0 sed --in-place --separate --follow-symlinks -E "s!$1!$2!g" --

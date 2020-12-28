@@ -1,0 +1,14 @@
+#!/bin/sh -e
+#
+# Opens the clipboard in an editor.
+
+# file=`mktemp /tmp/clipboard-XXX --suffix .txt`
+file=`mktemp /tmp/clipboard-XXX`
+
+# Opens a new window instead of using vipe because I want to be able to just close the terminal
+# window in the middle of an edit without :wq and have the clipboard still update
+xsel --clipboard > "$file"
+x-terminal-emulator -e "$EDITOR -c 'set nofixeol' \"$file\""
+xsel --clipboard < "$file"
+
+rm "$file"

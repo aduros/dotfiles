@@ -21,7 +21,7 @@ configuration {
 /* global settings and color variables */
 * {
    blue:             #81A1C1;
-   darkblue:         #B48EAD;
+   darkblue:         #5e81ac;
    cyan:             #88C0D0;
    lightcyan:        #B48EAD;
    green:            #A3BE8C;
@@ -34,14 +34,19 @@ configuration {
 
    light1:           #D8DEE9;
 
-   background-color: @dark2;
+   background-color: @dark1;
+   /* border-color:     #88c0d0; */
    border-color:     @dark3;
    text-color:       @dark3;
-   dark-text-color:  @dark4;
+   dark-text-color:  @light1;
+   /* dark-text-color:  @dark4; */
    main-color:       @blue;
-   highlight:        @light1;
    urgent-color:     @red;
    selected-color:   @lightcyan;
+
+   prompt-fg: @blue;
+   selected-fg: @dark1;
+   selected-bg: @light1;
 }
 
 window {
@@ -52,6 +57,7 @@ window {
    border:  2px;
    border-radius: 0px;
    border-color: @border-color;
+   font: "DeJaVu Sans Mono 13";
 }
 
 mainbox {
@@ -99,19 +105,26 @@ element normal.active {
    text-color: @main-color;
 }
 
-element selected.normal {
-    background-color: @border-color;
-    text-color:       @selected-color;
-}
+/* element selected.normal { */
+/*     background-color: @selected-bg; */
+/*     text-color:       @selected-fg; */
+/*     highlight: @highlight-fg; */
+/* } */
+/*  */
+/* element selected.urgent { */
+/*     background-color: @urgent-color; */
+/*     text-color:       @background-color; */
+/* } */
+/*  */
+/* element selected.active { */
+/*     background-color: @selected-bg; */
+/*     text-color:       @selected-fg; */
+/* } */
 
-element selected.urgent {
-    background-color: @urgent-color;
-    text-color:       @background-color;
-}
-
-element selected.active {
-    background-color: @border-color;
-    text-color:       @green;
+element selected {
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
+    highlight: bold #5e81ac;
 }
 
 element alternate.normal {
@@ -127,6 +140,10 @@ element alternate.urgent {
 element alternate.active {
     background-color: @background-color;
     text-color:       @main-color;
+}
+
+element {
+    highlight: none #88C0D0;
 }
 
 scrollbar {
@@ -157,7 +174,7 @@ inputbar {
 prompt {
    padding:0px 10px;
    background-color: @background-color;
-   text-color: @highlight;
+   text-color: @prompt-fg;
 }
 
 entry {
@@ -175,8 +192,8 @@ case-indicator {
 #textbox-prompt-colon {
 	padding:0px 0px;
     expand:     false;
-    str:        ":";
+    str:        ">";
     margin:     0px 0.3em 0em 0em ;
-    text-color: @highlight;
+    text-color: @prompt-fg;
     background-color:@background-color;
 }

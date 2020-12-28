@@ -31,13 +31,14 @@ ignore_newline = true
 ; Icons
 icon_position = left
 max_icon_size = 18
-icon_path = "/usr/share/icons/gnome/16x16/status:/usr/share/icons/gnome/16x16/devices:/usr/share/icons/gnome/16x16/apps:/usr/share/icons/gnome/16x16/mimetypes"
+; Flatery-Dark icons
+icon_path = "/home/bruno/.icons/Flatery-Dark/actions/16:/home/bruno/.icons/Flatery-Dark/apps/16:/home/bruno/.icons/Flatery-Dark/devices/16:/home/bruno/.icons/Flatery-Dark/emblems/16:/home/bruno/.icons/Flatery-Dark/mimetypes/16:/home/bruno/.icons/Flatery-Dark/panel/16:/home/bruno/.icons/Flatery-Dark/places/16"
 
 ; Actions
 show_indicators = false
 mouse_left_click = do_action
 mouse_right_click = close_all
-dmenu = rofi -dmenu -p Notification
+dmenu = rofi -dmenu -i -p Notification
 browser = x-www-browser
 
 ; format = "%s  —  %b"
