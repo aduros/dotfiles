@@ -1,4 +1,11 @@
 #!/bin/sh -e
+#
+# Prints/previews a file to stdout, with graceful binary file handling, syntax highlighting and
+# automatic paging.
+#
+# Used by lf and maybe other programs.
+#
+# TODO(2021-01-18): Gracefully handle multiple input files.
 
 file="$1"
 encoding=`file --mime-encoding -bL -- "$file"`
@@ -23,6 +30,5 @@ if [ "$encoding" = "binary" ]; then
     esac
 
 else
-    # cat -- "$1"
-    highlight --force --out-format ansi -- "$file"
+    batcat --color always -- "$@"
 fi

@@ -1,4 +1,6 @@
 #!/bin/sh -e
+#
+# Adds an event to the calendar.
 
 event=`echo "" | rofi -dmenu -lines 0 -i -p "Add to calendar"`
 

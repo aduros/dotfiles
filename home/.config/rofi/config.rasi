@@ -16,6 +16,11 @@ configuration {
 
     /* Use this same file for coloring information */
     theme: "config";
+
+    /** Parity with fzf: https://github.com/davatorium/rofi/issues/810 */
+    matching: "fuzzy";
+    sorting-method: "fzf";
+    sort: true;
 }
 
 /* global settings and color variables */

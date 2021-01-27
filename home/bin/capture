@@ -42,10 +42,10 @@ read -r x y w h < <(echo $region)
 case "$mode" in
 video)
     if [ -z "$output" ]; then
-        output=`mktemp /tmp/capture-XXX --suffix .mp4`
+        output=`mktemp ~/trash/capture-XXX --suffix .mp4`
     fi
-    # ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y -f pulse -i 0 "$output" &
-    ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y "$output" &
+    # -f pulse -i 0
+    ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y -pix_fmt yuvj420p "$output" &
     echo $! > "$lock"
     echo -e "\uf03d" > $XDG_RUNTIME_DIR/polybar-capture
     wait
@@ -54,7 +54,7 @@ video)
 
 screenshot | *)
     if [ -z "$output" ]; then
-        output=`mktemp /tmp/capture-XXX --suffix .png`
+        output=`mktemp ~/trash/capture-XXX --suffix .png`
     fi
     import -window root -crop "${w}x${h}+${x}+${y}" "$output"
     ;;

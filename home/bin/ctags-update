@@ -1,20 +1,22 @@
 #!/bin/sh -e
 #
-# Update a ctags file and link to it from the global index
+# Adds project tags to the global index.
 
-tags_db="$HOME/.cache/bruno-ctags"
+tags_db="$HOME/.cache/vim-ctags"
 # project_root=`git rev-parse --show-toplevel`
 project_root="$PWD"
-flattened=`echo $project_root | sed 's!/!__!g'`
+flattened=`echo $project_root | sed 's!/!%!g'`
 
 # It's in a weird subdirectory with a single file called tags because the vim "tags" option doesn't
-# support wildcards in the form ~/.cache/bruno-ctags/*
+# support wildcards in the form ~/.cache/vim-ctags/*
 mkdir -p "$tags_db"/"$flattened"
 
-# The tags file must have absolute paths
+# Remember: Paths in the tags file must be absolute
 if [ -d "$project_root/.git" ]; then
+    # Include only files tracked in git
     git ls-files | awk -v pwd="$PWD/" '{print pwd $0}'
 else
+    # Otherwise include ALL files
     find "$project_root"/ -type f
 fi | ctags -L - -f "$tags_db"/"$flattened"/tags --languages=haxe
 

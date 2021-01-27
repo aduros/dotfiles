@@ -1,3 +1,38 @@
+#navigator-toolbox {
+  display: flex;
+}
+#nav-bar {
+  order: 1;
+  display: flex;
+}
+#titlebar {
+  order: 2;
+  flex: 1;
+}
+#nav-bar, #titlebar {
+  /* border-bottom: 2px solid #4c566a !important; */
+  height: 38px !important;
+}
+#back-button, #forward-button, #page-action-buttons, #alltabs-button, #PanelUI-button {
+  display: none;
+}
+#nav-bar-customization-target {
+  order: 9999;
+  display: flex;
+}
+#urlbar-container {
+  order: 9999;
+}
+#urlbar:not([open]) > #urlbar-background {
+  display: none !important;
+}
+/* #urlbar[open="true"] #urlbar-background { */
+/*   display: initial; */
+/* } */
+#urlbar {
+  margin-top: -3px;
+}
+
  :root {
 
    /* Minimal Functional Fox variables*/
@@ -8,24 +43,23 @@
   --mff-sidebar-color: #e0fbfc;
   --mff-tab-border-radius: 8px 8px 0 0;
   --mff-tab-color: #eceff4;
-  --mff-tab-font-family: "Cantarell", "Ubuntu", sans;
+  --mff-tab-font-family: "DejaVu Sans", sans-serif;
   --mff-tab-font-size: 11pt;
   --mff-tab-font-weight: 400;
   --mff-tab-height: 32px;
-  --mff-tab-pinned-bg: #3b4252;
   --mff-tab-selected-bg: #4c566a;
   --mff-tab-soundplaying-fg: #2e3440;
   --mff-tab-soundplaying-bg: #ebcb8b;
-  --mff-urlbar-color: #98c1d9;
-  --mff-urlbar-focused-color: #e0fbfc;
-  --mff-urlbar-font-family: "Cantarell", "Ubuntu", serif;
-  --mff-urlbar-font-size: 12pt;
-  --mff-urlbar-font-weight: 700;
-  --mff-urlbar-results-color: #e0fbfc;
-  --mff-urlbar-results-font-family: "mononoki Nerd Font", "Ubuntu", serif;
-  --mff-urlbar-results-font-size: 12pt;
-  --mff-urlbar-results-font-weight: 700;
-  --mff-urlbar-results-url-color: #98c1d9;
+  --mff-urlbar-color: #d8dee9;
+  --mff-urlbar-focused-color: #d8dee9;
+  --mff-urlbar-font-family: "DejaVu Sans Mono", monospace;
+  --mff-urlbar-font-size: 11pt;
+  --mff-urlbar-font-weight: bold;
+  --mff-urlbar-results-color: #88c0d0;
+  --mff-urlbar-results-font-family: "DejaVu Sans", sans-serif;
+  --mff-urlbar-results-font-size: 11pt;
+  --mff-urlbar-results-font-weight: bold;
+  --mff-urlbar-results-url-color: #d8dee9;
   /*   --mff-tab-selected-bg: linear-gradient(90deg, rgba(232,74,95,1) 0%, rgba(255,132,124,1) 50%, rgba(254,206,168,1) 100%); */
   /*   --mff-urlbar-font-weight: 600; */
 
@@ -37,6 +71,7 @@
   --lwt-toolbarbutton-icon-fill-attention: #a3be8c !important;
   --panel-disabled-color: #f9f9fa80;
   --toolbar-bgcolor: var(--mff-bg) !important;
+  /* --toolbarbutton-hover-background: #3b4252 !important; */
   --urlbar-separator-color: transparent !important;
 }
 
@@ -64,9 +99,13 @@
   background: var(--mff-tab-selected-bg) !important;
 }
 
-.tab-background:not[visuallyselected] {
-  background: var(--mff-tab-selected-bg) !important;
-  opacity: 0.5 !important;
+/* .tab-background:not[visuallyselected] { */
+/*   background: var(--mff-tab-selected-bg) !important; */
+/*   opacity: 0.5 !important; */
+/* } */
+
+#TabsToolbar[brighttext] .tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected="true"]):not([multiselected]) {
+  background: #3b4252 !important;
 }
 
 /* This positions the tabs under the navaigator container */
@@ -148,7 +187,7 @@ width: 50% !important;
 }
 
 .tabbrowser-tab[soundplaying="true"] {
-  border: 2px solid var(--mff-tab-soundplaying-bg) !important;
+  border-bottom: 2px solid var(--mff-tab-soundplaying-bg) !important;
 }
 
 #tabs-newtab-button {
@@ -156,7 +195,7 @@ width: 50% !important;
   opacity: 0.7;
 }
 
-.tab-icon-sound {
+.tab-icon-sound, .tab-icon-overlay {
   display: none !important;
 }
 
@@ -215,7 +254,7 @@ width: 50% !important;
   color: var(--mff-urlbar-color) !important;
   font-family: var(--mff-urlbar-font-family) !important;
   font-weight: var(--mff-urlbar-font-weight)!important;
-  text-align: center !important;
+  /* text-align: center !important; */
 }
 
 #tracking-protection-icon-container, #identity-box {
@@ -240,7 +279,7 @@ toolbar {
 }
 
 #urlbar-background {
-  opacity: .98 !important;
+  /* opacity: .98 !important; */
 }
 
 #navigator-toolbox, toolbaritem {
@@ -290,8 +329,8 @@ toolbar#nav-bar {
 }
 
 #urlbar {
-  max-width: 70% !important;
-  margin: 0 15% !important;
+  /* max-width: 70% !important; */
+  /* margin: 0 15% !important; */
   /* 	position: unset!important; */;
 }
 

@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+#
+# Kills all windows on the focused workspace and switches to the previous workspace.
+
+import i3ipc
+
+i3 = i3ipc.Connection()
+
+for workspace in i3.get_workspaces():
+    if workspace.focused:
+        i3.command("workspace number %s" % workspace.num)
+        i3.get_tree().find_by_id(workspace.ipc_data["id"]).command("kill")
+        break

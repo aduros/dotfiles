@@ -12,11 +12,9 @@
 # - Adds files to GTK's recently used file list
 # - Is easier to type :)
 
-if [ "$1" = "" ]; then
-    # echo "Usage: $0 <files...>"
-    # exit 1
-    lf
-    exit 0
+# Default to opening the current directory
+if [ "$#" -lt 1 ]; then
+    set - "$PWD"
 fi
 
 # Add files to GTK's recently used files list
@@ -25,13 +23,16 @@ if [ `command -v file-history` ]; then
 fi
 
 case `file --mime-type -bL -- "$1"` in
+image/x-xcf | image/svg+xml | font/* | model/*)
+    # Fallback to using mimeopen for specific media types
+    i3-tabbed mimeopen --magic-only --no-ask -- "$@" ;;
+
 image/*)
     i3-tabbed sxiv -b -- "$@" ;;
 
 video/*)
     i3-tabbed mpv -- "$@" ;;
 
-# application/pdf | application/epub+zip)
 application/pdf)
     i3-tabbed zathura -- "$@" ;;
 
@@ -45,10 +46,6 @@ inode/directory)
 application/gzip | application/java-archive | application/x-7z-compressed | application/x-bzip2 \
     | application/x-rar | application/x-tar | application/x-xz | application/zip)
     lf-archive "$@" ;;
-
-audio/* | font/* | image/* | model/* | video/*)
-    # Fallback to using mimeopen for unknown media types
-    i3-tabbed mimeopen --magic-only --no-ask -- "$@" ;;
 
 *)
     # Unknown mimetype, use the file extension to figure out what to do from here

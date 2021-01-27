@@ -1,0 +1,44 @@
+#!/bin/sh -eu
+#
+# Runs a process jailed to $PWD with most capabilities disabled by default. Good for running
+# potentially sketchy applications.
+#
+# Usage: jailcwd [opts] [firejail-opts] command ...
+
+# allow_x11=
+allow_network=
+allow_dev=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        # --allow-x11|-x) allow_x11=1 ;;
+        --allow-network|-n) allow_network=1 ;;
+        --allow-dev|-d) allow_dev=1 ;; # Allow gamepad and other device access
+        # --) break ;;
+        # -*) echo "Unrecognized option: $1" >&2 ; exit 1 ;;
+        *) break ;;
+    esac
+    shift
+done
+
+# TODO(2020-12-30): Also need to check that $PWD isn't a parent of $HOME
+if [ "$PWD" = "$HOME" ]; then
+    echo "jailcwd: Don't run this in \$HOME!" >&2
+    exit 1
+fi
+
+flags=""
+# if [ "$allow_x11" = "" ]; then
+#     flags="$flags --x11=none"
+# fi
+if [ "$allow_network" = "" ]; then
+    flags="$flags --net=none"
+fi
+if [ "$allow_dev" = "" ]; then
+    flags="$flags --private-dev --protocol=unix,inet" # Disable netlink
+fi
+
+# Maybe need --whitelist=/run/user/$UID/pulse but audio still seems to work so I dunno
+# "--blacklist=/run/user/`id -u`" --whitelist=/run/user/1000/pulse \
+# run_dir="/run/user/`id -u`"
+firejail --noprofile --caps.drop=all --seccomp --private="$PWD" --private-tmp \
+    --disable-mnt --novideo --nodbus --nou2f $flags "$@"

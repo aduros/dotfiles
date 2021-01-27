@@ -41,19 +41,26 @@ au BufReadCmd *.apk,*.ipa,*.appx,*.wgt,*.ane,*.swc,*.fdz,*.zxp,*.crx call zip#Br
 
 " File type specific settings
 autocmd FileType ant,xml,html,css,json setlocal sw=2
-autocmd Filetype text,mail,gitcommit,svn,mkd setlocal textwidth=72
+autocmd Filetype mail,gitcommit,svn setlocal textwidth=72
 " Because overridden by filetype, dunno why
 autocmd FileType typescript setlocal sw=4
 
 " Persistent backup and undo
+" Use :recover to restore a corrupted file, or manually copy the .backup file in ~/trash
 if isdirectory(glob("~/trash"))
     set backup
     set backupdir=~/trash
+    " Include the full path in the backup filename
+    autocmd BufWritePre * let &backupext = "_" . substitute(expand("%:p:h"), "/", "%", "g") . ".backup"
+
     set undofile
     set undolevels=10000
     set undodir=~/trash
+
+    " Put the swapfiles in trash, but ignore warnings about swapfile already existing
+    set directory=~/trash
+    set shortmess+=A
 endif
-set noswapfile " More trouble than they're worth
 
 " Remember lots of history
 set viminfo=!,'10000,<50,s1000,h
@@ -111,6 +118,11 @@ set mouse=a
 " Soft wrapping when editting textareas from tridactyl
 set linebreak
 autocmd FileType text setlocal textwidth=0 wrap
+
+" DISABLED: Problems with inserting new bullet point line using O on existing bullet list item
+" " Autoformat wrapping differently for txt and markdown
+" autocmd FileType text PencilSoft
+" autocmd FileType markdown,mkd,vimwiki PencilHard
 
 " Add a 1 character margin so vertical splits can breathe a bit
 " set foldcolumn=1
@@ -176,7 +188,7 @@ set formatoptions+=croq
 " set comments+=fb:•
 
 " Ctags options
-set tags=$HOME/.cache/bruno-ctags/*/tags
+set tags=$HOME/.cache/vim-ctags/*/tags
 
 " Make <tab> be contextual completion
 " let g:SuperTabDefaultCompletionType = "context"

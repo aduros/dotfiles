@@ -4,14 +4,15 @@
 
 apt_common=(
     archivemount
+    bat
     curl
     entr
     exiftool
     fd-find
-    highlight
     htop
     # inotify-tools
     jsonlint
+    mlocate
     moreutils
     neovim
     ripgrep
@@ -30,9 +31,9 @@ apt_desktop=(
     geary
     gimp
     git
-    gocryptfs
     grabc
     hsetroot
+    hugo
     i3lock
     imagemagick
     libnotify-bin
@@ -41,6 +42,7 @@ apt_desktop=(
     npm
     p7zip-full
     rar
+    restic
     rofi
     slop
     universal-ctags
@@ -52,6 +54,7 @@ apt_desktop=(
 
 apt_server=(
     duc-nox
+    goaccess
 )
 
 npm_desktop=(
@@ -61,7 +64,7 @@ npm_desktop=(
 )
 
 pip_desktop=(
-    pypyp
+    # pypyp
     rofimoji
 )
 
@@ -91,12 +94,15 @@ if [ "$DISPLAY" ]; then
     # Update permissions so ssh works
     chmod 600 ~/.ssh/*
 
+    # Protect files in home directory
+    chmod 750 $HOME
+
     # Apply dconf settings
     dconf load / < ~/.config/dconf-settings.ini
-
-    # Make some standard directories
-    mkdir -p ~/apps ~/freezer ~/trash
 fi
+
+# Make some standard directories
+mkdir -p ~/trash
 
 echo "Changing default shell to zsh"
 sudo chsh --shell /bin/zsh $USER

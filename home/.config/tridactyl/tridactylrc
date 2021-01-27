@@ -1,8 +1,43 @@
 " Tridactyl persists settings from the last session in its own storage, wipe it
 sanitise tridactyllocal tridactylsync
 
+" Load custom JS extensions
+jsb -r custom.js
+
 set theme shydactyl
 colors base16-nord
+
+" Clear all default search urls
+setnull searchurls.google
+setnull searchurls.googlelucky
+setnull searchurls.scholar
+setnull searchurls.googleuk
+setnull searchurls.bing
+setnull searchurls.duckduckgo
+setnull searchurls.yahoo
+setnull searchurls.twitter
+setnull searchurls.wikipedia
+setnull searchurls.youtube
+setnull searchurls.amazon
+setnull searchurls.amazonuk
+setnull searchurls.startpage
+setnull searchurls.github
+setnull searchurls.searx
+setnull searchurls.cnrtl
+setnull searchurls.osm
+setnull searchurls.mdn
+setnull searchurls.gentoo_wiki
+setnull searchurls.qwant
+
+" Custom search urls
+set searchurls.l https://duckduckgo.com/?q=%21ducky+
+set searchurls.gh https://github.com/search?q=
+set searchurls.rt https://www.rottentomatoes.com/search?search=
+set searchurls.mdn https://developer.mozilla.org/en-US/search?q=
+set searchurls.yt https://www.youtube.com/results?search_query=
+set searchurls.wp https://www.wikiwand.com/en/
+set searchurls.archwiki https://wiki.archlinux.org/index.php?search=
+set searchurls.r https://old.reddit.com/r/
 
 set editorcmd i3-tabbed x-terminal-emulator -e "$EDITOR -c 'set nofixeol' %f '+normal!%lGzv%c|'"
 
@@ -29,6 +64,9 @@ bind <C-o> current_url open
 bind O fillcmdline tabopen
 bind <C-O> current_url open
 
+" Parity with vim
+bind j fillcmdline tab
+
 " TODO(2020-12-18): Many of these don't work due to being used by firefox itself...
 " bind --mode=browser <C-.> tabprev
 " bind --mode=browser <C-p> tabnext
@@ -46,6 +84,9 @@ bind L findnext -1
 bind gp clipboard open
 bind gw tabdetach
 
+" Fuzzy finder for open tabs
+bind <C-f> fillcmdline tab
+
 " Make yy use canonical / short links on the 5 websites that support them
 " Disabled: problems on youtube and maybe others
 " bind yy clipboard yankcanon
@@ -54,21 +95,34 @@ bind gw tabdetach
 " unbind --mode=ex <C-a>
 " unbind --mode=ex <C-c>
 
+bind ,p pin
+
+bind ,d tabopen about:downloads
+bind ,l tabopen about:logins
+
 " Subscribe to an RSS feed
-command subscribe js location.href="https://aduros.com/miniflux/bookmarklet?uri="+encodeURIComponent(location.href)
+command subscribe composite js "https://aduros.com/miniflux/bookmarklet?uri="+encodeURIComponent(location.href) | tabopen
 bind ,s subscribe
 
 " View old versions of the page on web.archive.org
-command archive js location.href="https://web.archive.org/*/"+location.href
+command archive composite js "https://web.archive.org/*/"+location.href | tabopen
 bind ,a archive
 
 " Open the current URL in Chrome
 command chrome composite js location.href | shellescape | exclaim google-chrome
 bind ,c chrome
 
+" Search within the current site
+command findhost composite js "site:"+location.host | tabopen
+bind ,f fillcmdline findhost
+
+" Search within the current URL, dunno if very useful
+command findhref composite js "site:"+location.href | tabopen
+bind ,F fillcmdline findhref
+
 " URL redirects
 autocmd DocStart ^https?://www\.reddit\.com urlmodify -t www old
 autocmd DocStart ^https?://en\.wikipedia\.org/wiki/ urlmodify -t en.wikipedia.org/wiki/ wikiwand.com/en/
 
-" Load custom JS extensions
-jsb -r custom.js
+command tabaudio jsb __custom_tabAudio()
+bind ga tabaudio

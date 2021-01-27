@@ -53,23 +53,20 @@ alias ps="ps -eo user,pid,time,command"
 alias rm="rm -r"
 alias scp="scp -r"
 alias tree="tree -C --dirsfirst --noreport"
-alias feh="feh --scale-down"
-alias sxiv="sxiv -b"
 alias ip="ip -color=auto"
 
 # Alias certain commands to run through i3-tabbed
-alias feh="i3-tabbed feh"
-alias sxiv="i3-tabbed sxiv"
+alias sxiv="i3-tabbed sxiv -b"
 alias mpv="i3-tabbed mpv"
 alias zathura="i3-tabbed zathura"
 alias gimp="i3-tabbed gimp"
 
 # New basic commands
 alias e="ls"
+alias ea="ls -A"
 alias v="$EDITOR"
 alias fd="fdfind"
 alias trash="mv -t ~/trash -iv --"
-alias freezer="mv -t ~/freezer -iv --"
 # $LESSOPEN input filter breaks tailing, so create a new alias just for tailing
 alias follow="less --no-lessopen +F --"
 

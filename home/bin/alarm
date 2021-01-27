@@ -1,0 +1,40 @@
+#!/bin/bash -e
+#
+# Runs a quick timer.
+
+lock="$XDG_RUNTIME_DIR/alarm-lock.pid"
+icon="$XDG_RUNTIME_DIR/polybar-watch"
+
+input=`echo "" | rofi -dmenu -lines 0 -i -p "Alarm (minutes or date)"`
+
+if [[ "$input" =~ ^[0-9\.]*$ ]]; then
+    # Input was a delta in minutes
+    seconds=`echo "$input * 60" | bc -l`
+else
+    # Input was an absolute time, or a delta like +1 hour
+    target=`date +%s -d "$input"`
+    now=`date +%s`
+    seconds=`echo "$target - $now" | bc -l`
+fi
+
+# Only run once instance at a time
+if [ -f "$lock" ]; then
+    kill `cat "$lock"` 2>/dev/null || true
+fi
+echo $$ > "$lock"
+
+notify-send "Timer started" "$input" -i time
+echo "Sleeping for $seconds seconds"
+third=`echo "$seconds / 3" | bc -l`
+echo -e "\uf251" > "$icon"
+sleep "$third"
+echo -e "\uf252" > "$icon"
+sleep "$third"
+echo -e "\uf253" > "$icon"
+sleep "$third"
+
+notify-send "Timer complete" "$input" -i time
+echo > "$icon"
+rm -f "$lock"
+
+mpv /usr/share/sounds/gnome/default/alerts/glass.ogg || true

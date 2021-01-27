@@ -1,0 +1,19 @@
+#!/bin/sh -e
+#
+# Runs a long-running command and shuts down the computer when it finishes. A log is saved to the
+# home directory so it can be reviewed later.
+
+if [ -z "$SUDO_USER" ] || [ "$#" -lt 1 ]; then
+    echo "Usage: sudo $0 command ..."
+    exit 1
+fi
+
+log="/home/$SUDO_USER/trash/poweroff-after.log"
+echo "Saving log to $log..."
+echo
+
+echo "Started $@ at `date`" | sudo -u "$SUDO_USER" tee --append "$log" >/dev/null
+sudo -u "$SUDO_USER" -- "$@" 2>&1 | sudo -u "$SUDO_USER" tee --append "$log"
+echo "Finished $@ at `date`" | sudo -u "$SUDO_USER" tee --append "$log" >/dev/null
+
+poweroff

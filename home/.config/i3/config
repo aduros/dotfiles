@@ -43,6 +43,7 @@ bindsym $mod+minus scratchpad show
 
 # Kill focused window
 bindsym $mod+d kill
+bindsym $mod+shift+d exec --no-startup-id ~/.config/i3/kill-workspace
 
 # Terminal applications. They should always use the current directory of the focused window.
 bindsym $mod+Return exec --no-startup-id cd "`xcwd`" && x-terminal-emulator
@@ -54,7 +55,7 @@ bindsym $mod+Shift+V exec --no-startup-id cd "`xcwd`" && x-terminal-emulator -e 
 # bindsym $mod+g exec --no-startup-id cd "`xcwd`" && x-terminal-emulator -e "gitui && $SHELL"
 
 # Open recent files
-bindsym $mod+j exec --no-startup-id file-history | rofi -dmenu -i -p Hist | sed "s|^~/|$HOME/|" | xargs -d '\n' xdg-open
+bindsym $mod+j exec --no-startup-id file-history | rofi -dmenu -p Hist | sed "s|^~/|$HOME/|" | xargs -d '\n' xdg-open
 bindsym $mod+z exec --no-startup-id cd "`z-history | tac | rofi -dmenu -i -p z | sed "s|^~/|$HOME/|"`" && x-terminal-emulator
 
 # Rofi dialogs

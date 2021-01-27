@@ -44,6 +44,12 @@ nnoremap ; :
 " Temporary for rewiring
 " nnoremap : :echo "Semicolon ;)"<CR>
 
+" Go to last modification
+xnoremap gm `.
+
+inoremap <C-s> <C-o>:w<CR>
+nnoremap <C-s> :w<CR>
+
 function! ToggleQuickfix ()
     let wincount = winnr("$")
     for win in range(1, wincount)
@@ -75,9 +81,9 @@ nmap <c-o> :Lf<CR>
 " Ctrl-shift-o is remapped to F14 by the terminal in ~/.Xresources to make this work
 nmap <F14> :call OpenLfIn("%", "vsplit ")<CR>
 
-" nmap <leader>t :FZF<CR>
 nmap <c-f> :Files<CR>
 nmap <c-j> :History<CR>
+nmap j :Buffers<CR>
 nmap <leader>t :Tags<CR>
 nmap <leader>we :call fzf#vim#files("~/data", {"source": "fdfind -e md"})<CR>
 " Also disables the ctrl-t binding which is not dvorak-friendly

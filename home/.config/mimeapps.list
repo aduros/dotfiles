@@ -19,4 +19,10 @@ application/x-tar=lf-archive.desktop
 application/x-xz=lf-archive.desktop
 application/zip=lf-archive.desktop
 
+# Looks like application/bzip2 is used when it shouldn't be...
+application/bzip2=lf-archive.desktop
+
+# Text files which other apps try to take over
+text/xml=nvim.desktop
+
 # Below lines automatically added by desktop environment

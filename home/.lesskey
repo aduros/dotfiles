@@ -10,6 +10,6 @@ L reverse-search
 \e quit
 
 #env
-LESS = -iR
+LESS = -iR --jump-target=3
 # Workaround for mapping ESC: https://github.com/gwsw/less/issues/83
 LESS_TERMCAP_@8 =

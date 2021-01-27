@@ -62,8 +62,13 @@ Plug 'vimwiki/vimwiki'
 " Plug 'godlygeek/tabular'
 " Plug 'plasticboy/vim-markdown'
 
+Plug 'reedes/vim-pencil'
+
 " Language-server client for IDE features
 Plug 'natebosch/vim-lsc'
+
+" Edit binary files with xxd with vim -b <file> or :Hexmode
+Plug 'fidian/hexmode'
 
 call plug#end()
 
@@ -275,19 +280,6 @@ autocmd BufNewFile,BufRead * call ArrangeWindows()
 " Opens the edit command on the current directory
 " cnoremap ced e <c-r>=expand("%:h")<cr>/
 
-" vim -b : edit binary using xxd-format!
-" TODO: Generalize so that it can operate on any file extension
-augroup Binary
-  au!
-  au BufReadPre  *.dat let &bin=1
-  au BufReadPost *.dat if &bin | %!xxd
-  au BufReadPost *.dat set ft=xxd | endif
-  au BufWritePre *.dat if &bin | %!xxd -r
-  au BufWritePre *.dat endif
-  au BufWritePost *.dat if &bin | %!xxd
-  au BufWritePost *.dat set nomod | endif
-augroup END
-
 " Integration with "TODO" comments
 function ShowTodos(...)
     let cmd = ["todo"]
@@ -316,8 +308,10 @@ function OpenBlog (...)
     let slug = substitute(slug, "[^a-z0-9\-]", "", "g")
     let slug = substitute(slug, "--*", "-", "g")
 
+    let dir = $HOME."/data/website/blog/".slug
     let g:bruno_template_title = title
-    execute "edit ~/data/website/blog/".slug.".md"
+    call mkdir(dir)
+    execute "edit ".dir."/index.md"
 endfunction
 command -nargs=? Blog :call OpenBlog(<f-args>)
 autocmd BufNewFile ~/data/website/blog/*.md call template#load("~/.config/nvim/template/other/blog.md")

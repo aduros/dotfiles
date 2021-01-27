@@ -1,12 +1,17 @@
 #!/bin/sh -e
 #
-# Deploys a directory with a start script to run as a systemd service.
+# Deploys a directory with a start script to run as a sandboxed systemd service.
+#
+# Install firejail with: apt install firejail --no-recommends
 
 # The server being deployed to
 server="aduros"
 
+# The user that will run this app
+exec_user="ubuntu"
+
 # The directory containing all our apps
-apps_dir="/home/ubuntu/apps"
+jails_dir="/home/$exec_user/jails"
 
 if [ "$1" != "" ]; then
     cd "$1"
@@ -26,23 +31,24 @@ esac
 echo
 
 # Copy the app
-echo "Uploading files to $apps_dir/$slug..."
-rsync -avz --exclude ".git/" --delete --progress ./ "$server:$apps_dir/$slug/"
+echo "Uploading files to $jails_dir/$slug..."
+rsync -avz --exclude ".git/" --progress ./ "$server:$jails_dir/$slug/"
 
-# Create the default systemd script
+# If the unit doesn't already exist, create and enable it, then restart the service
 unit="/etc/systemd/system/$slug.service"
-ssh "$server" "[ -f $unit ] || sudo tee $unit >/dev/null; sudo systemctl restart $slug" <<EOF
+ssh "$server" "[ -f $unit ] || (sudo tee $unit >/dev/null && sudo systemctl enable $slug);
+    sudo systemctl restart $slug" <<EOF
 [Unit]
-Description="$slug"
+Description=$slug
 After=network.target
 
 [Service]
-Environment=PRODUCTION=1
-User=nobody
-WorkingDirectory=$apps_dir/$slug
+User=$exec_user
+WorkingDirectory=$jails_dir/$slug
 SyslogIdentifier=$slug
-ExecStart=$apps_dir/$slug/start
-Restart=on-failure
+ExecStart=firejail --env=PRODUCTION=1 --noprofile --caps.drop=all --seccomp --private="$jails_dir/$slug" --private-tmp ./start
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

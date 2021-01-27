@@ -1,4 +1,4 @@
-set previewer ~/.config/lf/lf-previewer
+set previewer p
 set scrolloff 2
 set promptfmt "\033[30;1m%w\033[0m"
 
@@ -153,13 +153,6 @@ map gp GoClipboard
 # Show current directory in duc
 cmd Duc &i3-tabbed duc gui
 map ,d Duc
-
-# # Called by lf-archive
-# cmd MountCd ${{
-#     mnt="$1"
-#     echo "$mnt" >> "/tmp/lf-unmount-$id"
-#     lf -remote "send $id cd \"$mnt\""
-# }}
 
 map D delete
 
