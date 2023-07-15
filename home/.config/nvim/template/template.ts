@@ -1,3 +1,0 @@
-%SOURCE_HEADER%
-
-%CURSOR%

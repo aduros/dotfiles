@@ -33,11 +33,13 @@ if [ -f "$lock" ]; then
 fi
 
 if [ -z "$mode" ]; then
-    mode=`printf "screenshot\nvideo" | rofi -dmenu -p Capture`
+    mode=`printf "screenshot\nvideo\nphone-screenshot\nphone-video" | rofi -dmenu -p Capture`
 fi
 
-region=`slop -f "%x %y %w %h" --nodecorations --highlight --color 1,1,1,0.2 --bordersize 0`
-read -r x y w h < <(echo $region)
+prompt_region() {
+    local region=`slop -f "%x %y %w %h" --nodecorations --highlight --color 1,1,1,0.2 --bordersize 0`
+    read -r x y w h < <(echo $region)
+}
 
 case "$mode" in
 video)
@@ -45,6 +47,7 @@ video)
         output=`mktemp ~/trash/capture-XXX --suffix .mp4`
     fi
     # -f pulse -i 0
+    prompt_region
     ffmpeg -y -f x11grab -framerate 60 -video_size "${w}x${h}" -i :0.0+$x,$y -pix_fmt yuvj420p "$output" &
     echo $! > "$lock"
     echo -e "\uf03d" > $XDG_RUNTIME_DIR/polybar-capture
@@ -52,11 +55,39 @@ video)
     echo > $XDG_RUNTIME_DIR/polybar-capture
     ;;
 
-screenshot | *)
+phone-video)
+    if [ -z "$output" ]; then
+        output=`mktemp ~/trash/capture-XXX --suffix .mp4`
+    fi
+    adb shell screenrecord /sdcard/capture.mp4 &
+    echo $! > "$lock"
+    echo -e "\uf03d" > $XDG_RUNTIME_DIR/polybar-capture
+    wait
+    echo > $XDG_RUNTIME_DIR/polybar-capture
+    adb pull /sdcard/capture.mp4 "$output"
+    adb shell rm /sdcard/capture.mp4
+    ;;
+
+phone-screenshot)
+    if [ -z "$output" ]; then
+        output=`mktemp ~/trash/capture-XXX --suffix .png`
+    fi
+    adb shell screencap -p /sdcard/capture.png
+    adb pull /sdcard/capture.png "$output"
+    adb shell rm /sdcard/capture.png
+    ;;
+
+screenshot)
+    prompt_region
     if [ -z "$output" ]; then
         output=`mktemp ~/trash/capture-XXX --suffix .png`
     fi
     import -window root -crop "${w}x${h}+${x}+${y}" "$output"
+    ;;
+
+*)
+    echo "Unsupported capture mode: $mode"
+    exit 1
     ;;
 esac
 

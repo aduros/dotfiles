@@ -112,6 +112,10 @@ bind ,a archive
 command chrome composite js location.href | shellescape | exclaim google-chrome
 bind ,c chrome
 
+" Open the current URL in lf
+command lf composite js location.href | shellescape | exclaim x-terminal-emulator -e lf-url
+bind ,o lf
+
 " Search within the current site
 command findhost composite js "site:"+location.host | tabopen
 bind ,f fillcmdline findhost
@@ -123,6 +127,3 @@ bind ,F fillcmdline findhref
 " URL redirects
 autocmd DocStart ^https?://www\.reddit\.com urlmodify -t www old
 autocmd DocStart ^https?://en\.wikipedia\.org/wiki/ urlmodify -t en.wikipedia.org/wiki/ wikiwand.com/en/
-
-command tabaudio jsb __custom_tabAudio()
-bind ga tabaudio

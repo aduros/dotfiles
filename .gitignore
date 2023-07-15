@@ -1,1 +1,2 @@
 home/.config/systemd/user/*.wants
+*.secrets

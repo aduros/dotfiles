@@ -4,6 +4,10 @@
 #
 # NOTE: This file is distributed, don't put passwords in here!
 
+if [ -f "$HOME/.zshrc.secrets" ]; then
+    source "$HOME/.zshrc.secrets"
+fi
+
 lfcd () {
     local file="$HOME/.cache/lf-last-dir-path"
 
@@ -39,14 +43,14 @@ fi
 alias config="git --git-dir=$HOME/data/.config.git --work-tree=$HOME"
 
 # Set default args on existing commands
-alias cp="cp -r"
+alias cp="cp -R"
 alias df="df -h"
 alias du="du -bhs"
 alias free="free -h"
 alias egrep="egrep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias grep="grep --color=auto"
-alias ls="ls --color=auto -h --group-directories-first --quoting-style=literal"
+alias ls="ls --color=auto -h"
 alias diff="diff --color=auto"
 alias mkdir="mkdir -p"
 alias ps="ps -eo user,pid,time,command"
@@ -54,6 +58,7 @@ alias rm="rm -r"
 alias scp="scp -r"
 alias tree="tree -C --dirsfirst --noreport"
 alias ip="ip -color=auto"
+alias exa="exa --group-directories-first"
 
 # Alias certain commands to run through i3-tabbed
 alias sxiv="i3-tabbed sxiv -b"
@@ -62,17 +67,17 @@ alias zathura="i3-tabbed zathura"
 alias gimp="i3-tabbed gimp"
 
 # New basic commands
-alias e="ls"
-alias ea="ls -A"
+alias e="exa"
+alias et="exa --tree"
 alias v="$EDITOR"
-alias fd="fdfind"
-alias trash="mv -t ~/trash -iv --"
+# alias fd="fdfind"
 # $LESSOPEN input filter breaks tailing, so create a new alias just for tailing
 alias follow="less --no-lessopen +F --"
 
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
+alias -- -="cd -"
 
 # Host specific stuff
 # case `hostname -s` in
@@ -86,9 +91,16 @@ alias ....="cd ../../.."
 # Create and enter a temporary workspace directory. Use $OLDPWD or cd - to access the original dir
 tmp () {
     mkdir -p ~/trash
-    local dir=`mktemp --directory ~/trash/tmp-XXX`
+    local dir=`mktemp -d ~/trash/tmp-XXX`
     pushd "$dir" > /dev/null
     "${@:1}"
+}
+
+# Send a file to trash and update its timestamp
+trash () {
+    mkdir -p ~/trash
+    mv -t ~/trash -iv -- "$@"
+    touch --no-create -- "$@"
 }
 
 # Swap two file names
@@ -133,16 +145,19 @@ x () {
 }
 compctl -/g '*.(tar|tar.gz|tgz|tar.bz2|tbz2|tar.xz|txz|zip|jar|apk|ipa|rar|7z)' x
 
-# Prompt
-autoload -U colors && colors
-PS1=""
+# Minimal prompt
+PROMPT=""
 if [ "$USER" != "bruno" ] && [ "$USER" != "ubuntu" ]; then
-    PS1="%{$fg[red]%}%n@"
+    PROMPT="%F{red}%n%f"
 fi
 if [ "$SSH_TTY" ]; then
-    PS1="$PS1%{$fg[yellow]%}%M:"
+    PROMPT="$PROMPT%F{yellow}@%M%f"
 fi
-PS1="%B$PS1%{$fg[black]%}%B%~%b "
+PROMPT="$PROMPT%(?.%F{blue}.%F{red})❯%f "
+
+# Put current directory in right prompt
+RPROMPT='%F{blue}$(print -rD "${PWD%/*}")/%B${PWD##*/}%b%f'
+setopt PROMPT_SUBST
 
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
@@ -171,22 +186,29 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 
+local postcmd=0
 precmd () {
+    if [ "$postcmd" -eq 0 ]; then
+        postcmd=1
+    else
+        echo
+    fi
+
     # Switch to beam cursor
     echo -ne '\e[6 q'
 
     # If we're running in X, automatically alert when a command ends on another workspace
     if [ -n "$WINDOWID" ]; then
         local exitCode="$?"
-        # TODO: Run in background?
-        if [ "`xdotool get_desktop`" != "`xdotool get_desktop_for_window $WINDOWID`" ]; then
-            local icon=`[ "$exitCode" = 0 ] && echo octopi-ok || echo octopi-error`
-            local lastCommand=`history | tail -n 1 | sed -e 's/^\s*[0-9]\+\s*//'`
-            notify-send --urgency=low -i "$icon" "Exit code $exitCode" "<tt>$lastCommand</tt>"
-            if [ "$exitCode" != 0 ]; then
-                echo -ne "\a" # Many terminals signal the workspace as urgent on a bell character
-            fi
-        fi
+        ## TODO: Run in background?
+        # if [ "`xdotool get_desktop`" != "`xdotool get_desktop_for_window $WINDOWID`" ]; then
+        #     local icon=`[ "$exitCode" = 0 ] && echo octopi-ok || echo octopi-error`
+        #     local lastCommand=`history | tail -n 1 | sed -e 's/^\s*[0-9]\+\s*//'`
+        #     notify-send --urgency=low -i "$icon" "Exit code $exitCode" "<tt>$lastCommand</tt>"
+        #     if [ "$exitCode" != 0 ]; then
+        #         echo -ne "\a" # Many terminals signal the workspace as urgent on a bell character
+        #     fi
+        # fi
     fi
 }
 
@@ -207,6 +229,11 @@ preexec () {
         title="$1 - $title"
     fi
     echo -ne "\033];$title\007"
+
+    if [ "$postcmd" != 0 ]; then
+        # Add space between the prompt and the start of command output
+        echo
+    fi
 }
 preexec
 
@@ -307,6 +334,7 @@ _bind_z () {
 zle -N _bind_z
 bindkey '^z' _bind_z
 
+# CTRL-J: open or complete based on file history
 _bind_recent () {
     local res=`file-history | fzf --reverse --height 40% --prompt "Hist> " | sed "s|^~/|$HOME/|"`
     if [ "$res" ]; then
@@ -321,7 +349,23 @@ _bind_recent () {
 zle -N _bind_recent
 bindkey '^j' _bind_recent
 
+# CTRL-F: complete, cd, or open a file
+_bind_f () {
+    local res=`fd --color=always | fzf --reverse --height 40% --ansi`
+    if [ "$res" ]; then
+        if [ "$LBUFFER" ]; then
+            LBUFFER="$LBUFFER${(q)res} "
+        elif [ -d "$res" ]; then
+            cd "$res"
+        else
+            o "$res"
+        fi
+    fi
+    zle reset-prompt
+}
+zle -N _bind_f
+bindkey '^f' _bind_f
+
 source ~/.config/shell/fzf/completion.zsh
 source ~/.config/shell/fzf/key-bindings.zsh
-
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+source ~/.config/shell/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

@@ -6,7 +6,7 @@ transmission-remote -l | grep -E '^\s*([0-9]+)\s+100%' | awk '{print $1}' | whil
     # Add all the top-level files from this torrent to file-history
     transmission-remote --torrent "$id" --info-files | \
         tail -n +3 | \
-        pjs '"/home/bruno/trash/" + $.slice(7).join(" ").split("/")[0]' | \
+        pjs '"/home/bruno/trash/" + $.slice(6).join(" ").split("/")[0]' | \
         sort -u | xargs -d '\n' file-history
 
     transmission-remote --torrent "$id" --remove

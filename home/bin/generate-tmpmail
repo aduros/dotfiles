@@ -1,0 +1,11 @@
+#!/bin/sh -e
+#
+# Generates a temporary email address and opens the link in the incoming confirmation email.
+
+email="`apg -a 1 -n 1 -M L`@1secmail.com"
+
+echo -n "$email" | xsel --clipboard
+notify-send "Copied temporary email to clipboard" -i edit-copy
+
+# https://github.com/aduros/check-tmpmail
+timeout 120 check-tmpmail "$email" | xargs firefox --private-window

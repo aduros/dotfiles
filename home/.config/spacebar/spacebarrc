@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+spacebar -m config title off
+
+spacebar -m config height 32
+
+spacebar -m config foreground_color 0xffd8dee9
+spacebar -m config background_color 0xff000000
+spacebar -m config space_icon_color 0xffd08770
+
+spacebar -m config text_font "Helvetica Neue:Normal:14.0"
+spacebar -m config clock_icon " "

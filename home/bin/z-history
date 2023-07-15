@@ -2,4 +2,4 @@
 #
 # Prints Z's history list in a format meant to be piped into fzf --tac.
 
-z-external -l 2>&1 | sed -E 's/[^\s]*\s+//' | sed "s|^$HOME/|~/|"
+z-external -l 2>&1 | sed -E 's/[0-9]+ +//' | sed "s|^$HOME/|~/|"

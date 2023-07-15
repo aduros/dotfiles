@@ -11,7 +11,7 @@ server="aduros"
 exec_user="ubuntu"
 
 # The directory containing all our apps
-jails_dir="/home/$exec_user/jails"
+jails_dir="/root/jails"
 
 if [ "$1" != "" ]; then
     cd "$1"

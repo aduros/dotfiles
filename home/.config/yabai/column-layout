@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+# Get the space of the window
+space=`yabai -m query --windows --window "$YABAI_WINDOW_ID" | jq .space`
+
+# Count the windows in this space
+windows=`yabai -m query --windows --space "$space" | jq 'map(select(.level == 0)) | length'`
+
+if [ "$windows" -gt 1 ]; then
+    # Split vertically
+    yabai -m window "$YABAI_WINDOW_ID" --insert south
+else
+    # It's the only tiling window in this space, split horizontally for 2 columns
+    yabai -m window "$YABAI_WINDOW_ID" --insert east
+fi

@@ -17,6 +17,9 @@ if [ "$1" = "suspend" ]; then
     # XPS 13 touchpad breaks after coming out of sleep so restart it
     unfuck-touchpad
 
+    # Also sometimes forgets keyboard settings, so redo them
+    setxkbmap -option caps:escape -option ctrl:swap_lwin_lctl
+
     # Auto adjust screen backlight
-    backlight
+    # backlight
 fi

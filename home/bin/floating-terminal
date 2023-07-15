@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+kitty --title BRUNO_WM_FLOAT --single-instance --wait-for-single-instance-window-close "$@"
+# echo kitty --title BRUNO_WM_FLOAT --single-instance --wait-for-single-instance-window-close \
+#     --working-directory="$HOME" "$@"

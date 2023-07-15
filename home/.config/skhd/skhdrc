@@ -1,0 +1,72 @@
+# Change window focus, with wraparound
+cmd - h : yabai -m window --focus west  || (while yabai -m window --focus east)
+cmd - t : yabai -m window --focus south || (while yabai -m window --focus north)
+cmd - n : yabai -m window --focus north || (while yabai -m window --focus south)
+cmd - s : yabai -m window --focus east  || (while yabai -m window --focus west)
+
+# Move window, with wraparound
+shift + cmd - h : yabai -m window --warp west  || (while yabai -m window --warp east)
+shift + cmd - t : yabai -m window --warp south || (while yabai -m window --warp north)
+shift + cmd - n : yabai -m window --warp north || (while yabai -m window --warp south)
+shift + cmd - s : yabai -m window --warp east  || (while yabai -m window --warp west)
+
+# Promote window
+cmd - p : yabai -m window --swap largest || yabai -m window --swap next
+
+# Window commands
+shift + cmd - space : yabai -m window --toggle float
+cmd - f : yabai -m window --toggle zoom-fullscreen
+cmd - d : yabai -m window --close
+shift + cmd - d : ~/.config/yabai/kill-workspace
+
+# Applications
+# cmd - return : kitty --working-directory="$HOME" --single-instance
+cmd - return [
+    *: kitty --listen-on=unix:/tmp/kitty_$USER.socket --working-directory="$HOME" --single-instance
+    "kitty": kitty @ --to=unix:/tmp/kitty_$USER.socket launch --cwd=current --type=os-window
+]
+# cmd - return: kitty @ launch --cwd=current --type=os-window
+
+cmd - w : /Applications/Chromium.app/Contents/MacOS/Chromium --new-window "file://$HOME"
+shift + cmd - w : /Applications/Chromium.app/Contents/MacOS/Chromium --incognito --new-window "file://$HOME"
+
+cmd - m : floating-terminal -e node
+
+# cmd - v : floating-terminal -e "$EDITOR" +VimwikiIndex
+cmd - v : kitty --working-directory="$HOME" --single-instance -e "$EDITOR" "$HOME/data/index.md"
+shift + cmd - v : floating-terminal -e "$EDITOR" "$HOME/data/diary/"`date +%F`.md
+
+# Clipboard management
+cmd - b : clipboy list | fzf-menu '--prompt="Clipboard> "' --read0 --print0 --header-lines=1 | clipboy copy
+# shift + cmd - b : clipboy paste |
+
+# Password management
+cmd - l : floating-terminal pass-login
+# shift + cmd - l : TODO: generate a new password
+
+cmd - c : sed -n 's/^ *[-*] *\(.*\)$/\1/p' < "$HOME/data/snippets.md" | fzf-menu --prompt 'Snippet> ' | sed 's/.*: //' | clipboy copy
+shift + cmd - c : kitty --working-directory="$HOME" --single-instance -e "$EDITOR" "$HOME/data/snippets.md"
+
+# Change workspace
+cmd - 1 : yabai -m space --focus 1 || yabai -m space --focus recent
+cmd - 2 : yabai -m space --focus 2 || yabai -m space --focus recent
+cmd - 3 : yabai -m space --focus 3 || yabai -m space --focus recent
+cmd - 4 : yabai -m space --focus 4 || yabai -m space --focus recent
+cmd - 5 : yabai -m space --focus 5 || yabai -m space --focus recent
+cmd - 6 : yabai -m space --focus 6 || yabai -m space --focus recent
+cmd - 7 : yabai -m space --focus 7 || yabai -m space --focus recent
+cmd - 8 : yabai -m space --focus 8 || yabai -m space --focus recent
+cmd - 9 : yabai -m space --focus 9 || yabai -m space --focus recent
+cmd - 0 : yabai -m space --focus 10 || yabai -m space --focus recent
+
+# Move window to workspace
+shift + cmd - 1 : yabai -m window --space 1
+shift + cmd - 2 : yabai -m window --space 2
+shift + cmd - 3 : yabai -m window --space 3
+shift + cmd - 4 : yabai -m window --space 4
+shift + cmd - 5 : yabai -m window --space 5
+shift + cmd - 6 : yabai -m window --space 6
+shift + cmd - 7 : yabai -m window --space 7
+shift + cmd - 8 : yabai -m window --space 8
+shift + cmd - 9 : yabai -m window --space 9
+shift + cmd - 0 : yabai -m window --space 10

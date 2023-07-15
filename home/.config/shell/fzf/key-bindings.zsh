@@ -58,15 +58,15 @@ __fzfcmd() {
     echo "fzf-tmux ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} -- " || echo "fzf"
 }
 
-fzf-file-widget() {
-  LBUFFER="${LBUFFER}$(__fsel)"
-  local ret=$?
-  zle reset-prompt
-  return $ret
-}
-zle     -N   fzf-file-widget
+# fzf-file-widget() {
+#   LBUFFER="${LBUFFER}$(__fsel)"
+#   local ret=$?
+#   zle reset-prompt
+#   return $ret
+# }
+# zle     -N   fzf-file-widget
 # bindkey '^T' fzf-file-widget
-bindkey '^f' fzf-file-widget
+# bindkey '^f' fzf-file-widget
 
 # Ensure precmds are run after cd
 fzf-redraw-prompt() {

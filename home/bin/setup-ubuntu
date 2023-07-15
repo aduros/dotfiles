@@ -45,6 +45,7 @@ apt_desktop=(
     restic
     rofi
     slop
+    tesseract-ocr
     universal-ctags
     xcwd
     xdotool

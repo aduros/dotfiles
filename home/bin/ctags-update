@@ -18,6 +18,6 @@ if [ -d "$project_root/.git" ]; then
 else
     # Otherwise include ALL files
     find "$project_root"/ -type f
-fi | ctags -L - -f "$tags_db"/"$flattened"/tags --languages=haxe
+fi | ctags -L - -f "$tags_db"/"$flattened"/tags "--languages=typescript"
 
 echo "Updated ctags for $project_root, to undo run ctags-remove."

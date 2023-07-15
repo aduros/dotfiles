@@ -1,0 +1,31 @@
+#!/bin/sh
+
+sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action='sudo yabai --load-sa'
+
+clipboy watch & disown
+
+yabai -m config layout bsp
+
+yabai -m config mouse_modifier cmd
+yabai -m config focus_follows_mouse autofocus
+
+# yabai -m config window_topmost on
+yabai -m config window_shadow float
+
+yabai -m config window_border on
+yabai -m config window_border_width 4
+yabai -m config normal_window_border_color 0xff3b4252
+yabai -m config active_window_border_color 0xff81a1c1
+yabai -m config window_gap 12
+
+# Hide the --insert feedback. Can't set it to 0 for some reason.
+yabai -m config insert_feedback_color 0x00000001
+
+yabai -m rule --add app='^System Preferences$' manage=off
+
+yabai -m rule --add title='^BRUNO_WM_FLOAT$' manage=off
+yabai -m signal --add event=window_created title='^BRUNO_WM_FLOAT$' action='yabai -m window $YABAI_WINDOW_ID --grid 3:4:1:0:2:1'
+
+yabai -m signal --add event=window_focused action="~/.config/yabai/column-layout"
+yabai -m config auto_balance on

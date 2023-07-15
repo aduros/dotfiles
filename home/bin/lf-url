@@ -1,0 +1,12 @@
+#!/bin/sh -e
+#
+# Opens a remote URL (currently only a git repository) in lf.
+
+url="$1"
+
+mkdir -p ~/trash
+dir=`mktemp --directory ~/trash/lf-url-XXX`
+
+cd "$dir"
+git clone --depth=1 "$url"
+lf *

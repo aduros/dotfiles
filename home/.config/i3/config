@@ -11,8 +11,9 @@ hide_edge_borders both
 
 bindsym Print exec --no-startup-id capture --clipboard
 bindsym $mod+Print exec --no-startup-id capture | xargs -d '\n' share
-# bindsym XF86Search exec --no-startup-id generate-password
-bindsym $mod+Insert exec --no-startup-id generate-password
+bindsym $mod+Shift+c exec --no-startup-id copy-ocr
+
+bindsym $mod+Insert exec --no-startup-id pass-login
 bindsym $mod+XF86MonBrightnessUp exec --no-startup-id backlight
 bindsym $mod+XF86MonBrightnessDown exec --no-startup-id backlight
 
@@ -33,9 +34,9 @@ for_window [class="^Gnome-calendar$"] floating enable
 for_window [class="^Gnome-control-center$"] floating enable
 
 # Always send mail to workspace 3
-assign [class="^Geary$"] 3
-assign [class="^Thunderbird$"] 3
-assign [class="^Mail$"] 3
+# assign [class="^Geary$"] 3
+# assign [class="^Thunderbird$"] 3
+# assign [class="^Mail$"] 3
 
 # Scratchpad
 bindsym $mod+Shift+minus move scratchpad
@@ -61,10 +62,10 @@ bindsym $mod+z exec --no-startup-id cd "`z-history | tac | rofi -dmenu -i -p z |
 # Rofi dialogs
 bindsym $mod+e exec --no-startup-id rofi -modi drun -show drun -show-icons
 bindsym $mod+Tab exec --no-startup-id rofi -show window -show-icons
-bindsym $mod+c exec --no-startup-id ~/bin/calendar-add
+bindsym $mod+c exec --no-startup-id calendar-add
 bindsym $mod+b exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
 bindsym $mod+Shift+b exec --no-startup-id xsel-edit
-bindsym $mod+i exec --no-startup-id ~/.local/bin/rofimoji --insert-with-clipboard --skin-tone neutral --prompt Emoji
+bindsym $mod+i exec --no-startup-id rofimoji --skin-tone neutral --prompt Emoji
 bindsym $mod+backslash exec --no-startup-id rofi -show ssh
 
 # For quick maths
@@ -72,9 +73,10 @@ bindsym $mod+m exec --no-startup-id xterm -title "Calculator" -geometry 40x15 -f
 for_window [title="^Calculator$"] floating enable
 
 # Other app launch bindings
-bindsym $mod+w exec x-www-browser --new-window about:blank
+bindsym $mod+w exec x-www-browser
+bindsym $mod+shift+w exec x-www-browser --target private-window
 # bindsym $mod+shift+w exec x-www-browser --new-window --search "`xsel`"
-bindsym $mod+shift+w exec x-www-browser --private-window about:blank
+# bindsym $mod+shift+w exec x-www-browser --private-window about:blank
 
 # change focus
 bindsym $mod+h focus left
@@ -151,7 +153,7 @@ exec --no-startup-id xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput T
 bindsym F7 exec --no-startup-id unfuck-touchpad
 
 # Startup applications
-exec --no-startup-id setxkbmap -option caps:escape -option ctrl:swap_lwin_lctl
+exec --no-startup-id sleep 2 && setxkbmap -option caps:escape -option ctrl:swap_lwin_lctl
 exec --no-startup-id backlight
 exec --no-startup-id ~/.config/i3/column-layout
 exec --no-startup-id picom
@@ -160,7 +162,7 @@ exec --no-startup-id polybar --reload main
 exec --no-startup-id greenclip daemon
 # unclutter is already run by regolith session?
 # exec --no-startup-id unclutter
-exec geary
+# exec geary
 
 # resize window (you can also use the mouse for that)
 mode "resize" {

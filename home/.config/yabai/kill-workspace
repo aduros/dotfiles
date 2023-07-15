@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+# Close all windows in this space
+for id in `yabai -m query --windows --space | jq '.[].id'`; do
+    yabai -m window $id --close
+done
+
+# Go back to the previous space
+yabai -m space --focus recent

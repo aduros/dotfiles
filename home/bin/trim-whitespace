@@ -2,4 +2,4 @@
 #
 # Trim trailing whitespace from files
 
-replace '[[:space:]]\+$' '' "$@"
+replace '\s+$' '' "$@"

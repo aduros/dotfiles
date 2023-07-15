@@ -2,6 +2,9 @@
 #
 # Sets the screen backlight.
 
+# Disabled, broken?
+exit 0
+
 backlight="$1"
 
 if [ -z "$backlight" ]; then

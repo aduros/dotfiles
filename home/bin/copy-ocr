@@ -1,0 +1,9 @@
+#!/bin/bash -e
+#
+# Uses OCR to copy text from the screen into the clipboard.
+
+region=`slop -f "%x %y %w %h" --nodecorations --highlight --color 1,1,1,0.2 --bordersize 0`
+read -r x y w h < <(echo $region)
+
+import -window root -crop "${w}x${h}+${x}+${y}" png:- | tesseract - - | xsel --clipboard
+notify-send -i edit-copy "Copied text to clipboard"

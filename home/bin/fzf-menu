@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+input=/tmp/bruno-test-input
+output=/tmp/bruno-test-output
+mkfifo -m 600 "$input"
+mkfifo -m 600 "$output"
+trap "rm -f $input $output" EXIT
+
+# FIXME(2022-05-11): This waits for $input to be closed before fzf shows anything
+# https://askubuntu.com/questions/1107617/how-do-i-use-command-line-arguments-to-sh-in-the-c-command-string
+floating-terminal -e sh -c 'fzf "$@"'" < $input > $output" fzf "$@" &
+
+# FIXME(2022-11-27): On linux, can use /proc instead of setting up our own fifos
+# floating-terminal -e sh -c 'fzf "$@"'" < /proc/$$/fd/0 > /proc/$$/fd/1" fzf "$@"
+
+cat > "$input"
+cat "$output"

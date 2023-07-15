@@ -23,10 +23,3 @@ browser.downloads.onChanged.addListener(async item => {
         break;
     }
 });
-
-window.__custom_tabAudio = async function () {
-    const tabs = await browser.tabs.query({ currentWindow: true, hidden: false, audible: true });
-    if (tabs.length > 0) {
-        return browser.tabs.update(tabs[0].id, { active: true });
-    }
-}
